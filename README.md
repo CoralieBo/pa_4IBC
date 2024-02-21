@@ -10,7 +10,7 @@ Pouswap is a comprehensive decentralized application (dApp) simulating a decentr
 ## Authors
 
 - [Coralie Boyer (4IBC)](https://github.com/coralieBo/)
-- [Alaeddine Dhuilaa (4IBC)](https://github.com/degenanddev/)
+- [Ala (4IBC)](https://github.com/degenanddev/)
 
 ## Demo
 
@@ -34,7 +34,8 @@ https://pouswap.vercel.app/
 To install this project run :
 
 ```bash
-
+git clone https://github.com/degenanddev/pa_4IBC.git
+docker-compose build
 ```
     
 ## Deployment
@@ -42,15 +43,5 @@ To install this project run :
 To deploy this project run :
 
 ```bash
-
+docker-compose up -d
 ```
-
-
-## Running Tests
-
-To run tests, run the following command :
-
-```bash
-
-```
-
