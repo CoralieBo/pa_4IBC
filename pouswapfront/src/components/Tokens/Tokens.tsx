@@ -63,21 +63,21 @@ const TableRows = ({ token }: TableRowsProps) => {
         </div>
       </td>
 
-      <td className="p-4">
-        <div className="flex items-center gap-2 font-medium">
-          <span>{token.price} $</span>
-        </div>
-      </td>
-
       <td className="p-4 font-medium">
         <span>
-          {token.tvl.toLocaleString("en-US", {})}{" "} $
+          ${token.price.toLocaleString("en-US", {})}
         </span>
       </td>
 
       <td className="p-4">
         <span>
-          {token.volume.toLocaleString("en-US", {})}{" "} $
+          ${token.tvl.toLocaleString("en-US", {})}
+        </span>
+      </td>
+
+      <td className="p-4">
+        <span>
+          ${token.volume.toLocaleString("en-US", {})}
         </span>
       </td>
     </motion.tr>

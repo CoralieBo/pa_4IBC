@@ -5,6 +5,7 @@ import NotFound from './components/404/404';
 import Home from './components/Home/Home';
 import Swap from './components/Swap/Swap';
 import Tokens from './components/Tokens/Tokens';
+import Pools from './components/Pools/Pools';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/swap" element={<Swap />} />
         <Route path="/tokens" element={<Tokens />} />
+        <Route path="/pools" element={<Pools />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </div>
