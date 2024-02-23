@@ -6,6 +6,7 @@ import Home from './components/Home/Home';
 import Swap from './components/Swap/Swap';
 import Tokens from './components/Tokens/Tokens';
 import Pools from './components/Pools/Pools';
+import Pool from './components/Pools/Pool/Pool';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/swap" element={<Swap />} />
         <Route path="/tokens" element={<Tokens />} />
         <Route path="/pools" element={<Pools />} />
+        <Route path="/pools/:id" element={<Pool />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </div>

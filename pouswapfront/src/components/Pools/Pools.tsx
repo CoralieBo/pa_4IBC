@@ -1,9 +1,21 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
-// import { FiAward, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import "./Pools.scss";
+import { PoolInterface } from "../../interfaces/Pools";
+import { Link } from "react-router-dom";
+import { GetAllPools } from "../../services/Pools";
 
 const Pools = () => {
-    const [pools] = useState(poolData);
+    const [pools, setPools] = useState<PoolInterface[]>([]);
+
+    useEffect(() => {
+        const fetchPools = async () => {
+            const pools = await GetAllPools();
+            setPools(pools);
+        };
+
+        fetchPools();
+    }, []);
 
     return (
         <div className="w-full min-h-screen pt-24">
@@ -37,7 +49,7 @@ const Pools = () => {
 };
 
 interface TableRowsProps {
-    pool: Pool;
+    pool: PoolInterface;
 }
 
 const TableRows = ({ pool }: TableRowsProps) => {
@@ -67,7 +79,7 @@ const TableRows = ({ pool }: TableRowsProps) => {
                     />
                 </div>
                 <div>
-                    <span className="block mb-1 font-medium">{pool.token1} / {pool.token2}</span>
+                    <Link to={`/Pools/${pool.id}`} className="block mb-1 font-medium hover:underline">{pool.token1} / {pool.token2}</Link>
                 </div>
             </td>
 
@@ -93,47 +105,3 @@ const TableRows = ({ pool }: TableRowsProps) => {
 };
 
 export default Pools;
-
-interface Pool {
-    id: number;
-    token1: string;
-    token2: string;
-    logoURL1: string;
-    logoURL2: string;
-    tvl: number;
-    volume24h: number;
-    volume7d: number;
-}
-
-const poolData: Pool[] = [
-    {
-        id: 1,
-        token1: "BTC",
-        token2: "ETH",
-        logoURL1: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
-        logoURL2: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-        tvl: 1000000000,
-        volume24h: 100000000,
-        volume7d: 500000000,
-    },
-    {
-        id: 2,
-        token1: "BTC",
-        token2: "BNB",
-        logoURL1: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
-        logoURL2: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
-        tvl: 500000000,
-        volume24h: 50000000,
-        volume7d: 250000000,
-    },
-    {
-        id: 3,
-        token1: "ETH",
-        token2: "BNB",
-        logoURL1: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-        logoURL2: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
-        tvl: 100000000,
-        volume24h: 10000000,
-        volume7d: 50000000,
-    },
-];

@@ -8,6 +8,9 @@ const Swap = () => {
 
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
+    // const [token1, setToken1] = useState<string>("ETH");
+    // const [token2, setToken2] = useState<string>("POU");
+
     useEffect(() => {
         generateGridCount();
         window.addEventListener("resize", generateGridCount);
