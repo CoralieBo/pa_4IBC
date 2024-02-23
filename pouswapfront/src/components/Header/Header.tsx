@@ -22,15 +22,15 @@ const Header = () => {
                                 </li>
 
                                 <li>
-                                    <a className="text-gray-500 transition hover:text-gray-500/75" href="/"> Tokens </a>
+                                    <Link to={"/Tokens"} className="text-gray-500 transition hover:text-gray-500/75"> Tokens </Link>
                                 </li>
 
                                 <li>
-                                    <a className="text-gray-500 transition hover:text-gray-500/75" href="/"> Pools </a>
+                                    <Link to={"/Pools"} className="text-gray-500 transition hover:text-gray-500/75"> Pools </Link>
                                 </li>
 
                                 <li>
-                                    <a className="text-gray-500 transition hover:text-gray-500/75" href="/"> Profile </a>
+                                    <Link to={"/Profile"} className="text-gray-500 transition hover:text-gray-500/75"> Profile </Link>
                                 </li>
                             </ul>
                         </nav>
