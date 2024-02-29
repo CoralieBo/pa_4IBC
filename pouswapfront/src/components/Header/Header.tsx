@@ -22,15 +22,15 @@ const Header = () => {
                                 </li>
 
                                 <li>
-                                    <a className="text-gray-500 transition hover:text-gray-500/75" href="/"> Tokens </a>
+                                    <Link to={"/Tokens"} className="text-gray-500 transition hover:text-gray-500/75"> Tokens </Link>
                                 </li>
 
                                 <li>
-                                    <a className="text-gray-500 transition hover:text-gray-500/75" href="/"> Pools </a>
+                                    <Link to={"/Pools"} className="text-gray-500 transition hover:text-gray-500/75"> Pools </Link>
                                 </li>
 
                                 <li>
-                                    <a className="text-gray-500 transition hover:text-gray-500/75" href="/"> Profile </a>
+                                    <Link to={"/Profile"} className="text-gray-500 transition hover:text-gray-500/75"> Profile </Link>
                                 </li>
                             </ul>
                         </nav>
@@ -52,9 +52,9 @@ const Header = () => {
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
-                                    stroke-width="2"
+                                    strokeWidth="2"
                                 >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
                         </div>
