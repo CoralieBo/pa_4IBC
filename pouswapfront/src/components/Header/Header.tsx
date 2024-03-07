@@ -39,8 +39,7 @@ const Header = () => {
                     <div className="flex items-center gap-4">
                         <div className="sm:flex sm:gap-4 hidden md:block text-xs">
                             <button className="connectButton">
-                                <span className="button_top"> Connect Wallet
-                                </span>
+                                    <w3m-button balance="hide" size="sm" />
                             </button>
                         </div>
 
