@@ -4,6 +4,7 @@ import "./Pools.scss";
 import { PoolInterface } from "../../interfaces/Pools";
 import { Link } from "react-router-dom";
 import { GetAllPools } from "../../services/Pools";
+import money from "../../utils/asset/images/money.png";
 
 const Pools = () => {
     const [pools, setPools] = useState<PoolInterface[]>([]);
@@ -44,6 +45,9 @@ const Pools = () => {
                     </tbody>
                 </table>
             </div>
+            <div className="absolute w-44 rotate-12 top-28 right-44 drop-shadow-lg">
+                <img src={money} alt="money.png" />
+            </div>
         </div>
     );
 };
@@ -57,7 +61,7 @@ const TableRows = ({ pool }: TableRowsProps) => {
     return (
         <motion.tr
             layoutId={`row-${pool.id}`}
-            className="text-sm border-b border-colors-white2 hover:bg-colors-white2 transition-all ease-in-out duration-100"
+            className="text-sm border-b border-colors-white2 hover:bg-colors-white2"
         >
             <td className="pl-4 w-8 text-colors-black2">
                 {pool.id}
