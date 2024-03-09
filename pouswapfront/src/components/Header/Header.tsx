@@ -1,6 +1,7 @@
 import "./Header.scss";
 import logo from "../../utils/asset/logo.png";
 import { Link } from "react-router-dom";
+import ConnectButton from "../../utils/hooks/connectWallet";
 
 const Header = () => {
     return (
@@ -16,7 +17,7 @@ const Header = () => {
 
                     <div className="hidden md:block">
                         <nav aria-label="Global">
-                            <ul className="flex items-center gap-6 text-sm">
+                            <ul className="flex items-center gap-6">
                                 <li>
                                     <Link to={"/Swap"} className="text-gray-500 transition hover:text-gray-500/75"> Swap </Link>
                                 </li>
@@ -38,9 +39,9 @@ const Header = () => {
 
                     <div className="flex items-center gap-4">
                         <div className="sm:flex sm:gap-4 hidden md:block text-xs">
-                            <button className="connectButton">
-                                    <w3m-button balance="hide" size="sm" />
-                            </button>
+                            <div className="connectButton">
+                                    <ConnectButton />
+                            </div>
                         </div>
 
                         <div className="block md:hidden">

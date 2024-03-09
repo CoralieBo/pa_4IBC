@@ -23,26 +23,25 @@
   background: var(--button_outline_color);
 }
 
-w3m-button {
+.connectButton button {
   display: block;
   box-sizing: border-box;
+  // padding: 0.75em 1.5em;
   border: 2px solid var(--button_outline_color);
   border-radius: var(--button_radius);
-  // padding: 0.5em 1em;
   background: var(--button_color);
   color: var(--button_outline_color);
   transform: translateY(-0.2em);
   transition: transform 0.1s ease;
-  padding: 0.5em 1em;
-  // background-color: red;
+  font-size: 0.9rem;
 }
 
-button:hover w3m-button {
+button:hover button {
   /* Pull the button upwards when hovered */
   transform: translateY(-0.33em);
 }
 
-button:active w3m-button {
+button:active button {
   /* Push the button downwards when pressed */
   transform: translateY(0);
 }

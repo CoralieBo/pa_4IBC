@@ -1,5 +1,6 @@
 import "./Home.scss";
 import { tokens } from "../../utils/asset/tokens";
+import ConnectButton from "../../utils/hooks/connectWallet";
 
 const Home = () => {
     return (
@@ -12,9 +13,9 @@ const Home = () => {
                 <p className="text-colors-black2 text-3xl px-4 md:px-0 md:text-4xl md:w-10/12 italic text-center md:text-left">Empowering the future, one decentralized exchange at a time.</p>
                 <div className="md:w-2/3 flex justify-center">
                     <div className="sm:flex sm:gap-4 hidden mt-3 md:block text-xs">
-                        <button className="connectButton">
-                            <w3m-button balance="hide" size="sm" />
-                        </button>
+                        <div className="connectButton">
+                            <ConnectButton />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -26,6 +27,7 @@ const Home = () => {
                         <img src={tokens[2]} className="" alt="NFT" />
                         <img src={tokens[3]} className="" alt="NFT" />
                         <img src={tokens[4]} className="" alt="NFT" />
+                        <img src={tokens[5]} className="" alt="NFT" />
                     </div>
                     <div className="grid gap-2 left">
                         <img src={tokens[0]} className="" alt="NFT" />
@@ -33,6 +35,7 @@ const Home = () => {
                         <img src={tokens[2]} className="" alt="NFT" />
                         <img src={tokens[3]} className="" alt="NFT" />
                         <img src={tokens[4]} className="" alt="NFT" />
+                        <img src={tokens[5]} className="" alt="NFT" />
                     </div>
                 </div>
                 <div>
@@ -42,6 +45,7 @@ const Home = () => {
                         <img src={tokens[7]} className="" alt="NFT" />
                         <img src={tokens[8]} className="" alt="NFT" />
                         <img src={tokens[9]} className="" alt="NFT" />
+                        <img src={tokens[10]} className="" alt="NFT" />
                     </div>
                     <div className="grid gap-2 right">
                         <img src={tokens[5]} className="" alt="NFT" />
@@ -49,6 +53,7 @@ const Home = () => {
                         <img src={tokens[7]} className="" alt="NFT" />
                         <img src={tokens[8]} className="" alt="NFT" />
                         <img src={tokens[9]} className="" alt="NFT" />
+                        <img src={tokens[10]} className="" alt="NFT" />
                     </div>
                 </div>
                 <div>
@@ -58,6 +63,7 @@ const Home = () => {
                         <img src={tokens[2]} className="" alt="NFT" />
                         <img src={tokens[3]} className="" alt="NFT" />
                         <img src={tokens[4]} className="" alt="NFT" />
+                        <img src={tokens[5]} className="" alt="NFT" />
                     </div>
                     <div className="grid gap-2 left">
                         <img src={tokens[0]} className="" alt="NFT" />
@@ -65,6 +71,7 @@ const Home = () => {
                         <img src={tokens[2]} className="" alt="NFT" />
                         <img src={tokens[3]} className="" alt="NFT" />
                         <img src={tokens[4]} className="" alt="NFT" />
+                        <img src={tokens[5]} className="" alt="NFT" />
                     </div>
                 </div>
                 <div>

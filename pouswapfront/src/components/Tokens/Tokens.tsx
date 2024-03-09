@@ -1,15 +1,18 @@
+import "./Tokens.scss";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import money from "../../utils/asset/images/money.png";
+import { useEffect, useState } from "react";
+import shocked from "../../utils/asset/images/shocked.png";
+import coin from "../../utils/asset/images/coin.png";
+import { tokens as tokensLogo } from "../../utils/asset/tokens";
 
 const Tokens = () => {
   const [tokens] = useState(tokenData);
 
   return (
     <div className="w-full min-h-screen pt-24">
-      <div className="w-full max-w-5xl mx-auto relative">
+      <div className="w-full max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold p-4 text-colors-green1">All tokens</h1>
-        <table className="w-full bg-white shadow-lg rounded-lg max-h-[60vh] overflow-y-scroll">
+        <table className="w-full bg-white shadow-lg rounded-lg">
           <thead>
             <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
               <th className="pl-4 w-8">#</th>
@@ -30,13 +33,35 @@ const Tokens = () => {
             })}
           </tbody>
         </table>
-        <div className="absolute w-44 rotate-12 top-0 -right-16 drop-shadow-lg">
-          <img src={money} alt="money.png" />
-        </div>
+      </div>
+
+      <Animation index={1} classCss="coin1" tokenLogo={tokensLogo[2]} />
+      <Animation index={2} classCss="coin2" tokenLogo={tokensLogo[1]} />
+      <Animation index={3} classCss="coin3" tokenLogo={tokensLogo[4]} />
+      <Animation index={4} classCss="coin4" tokenLogo={tokensLogo[7]} />
+      <Animation index={5} classCss="coin5" tokenLogo={tokensLogo[10]} />
+      <div className="absolute w-32 bottom-0 left-12 drop-shadow-lg">
+        <img src={shocked} alt="money.png" />
       </div>
     </div>
   );
 };
+
+interface AnimationProps {
+  index: number;
+  classCss: string;
+  tokenLogo: string;
+}
+const Animation = ({index, classCss, tokenLogo}: AnimationProps) => {
+  return (
+    <div key={index} className={`absolute z-10 ${classCss}`}>
+      <div className="relative">
+        <img className="w-14" src={coin} alt="coin" />
+        <img className="w-6 absolute bottom-1/2 translate-y-1/2 right-1/2 translate-x-1/2" src={tokenLogo} alt="token" />
+      </div>
+    </div>
+  );
+}
 
 interface TableRowsProps {
   token: Token;
