@@ -1,6 +1,9 @@
+import "./Tokens.scss";
 import { motion } from "framer-motion";
-import { useState } from "react";
-// import { FiAward, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import shocked from "../../utils/asset/images/shocked.png";
+import coin from "../../utils/asset/images/coin.png";
+import { tokens as tokensLogo } from "../../utils/asset/tokens";
 
 const Tokens = () => {
   const [tokens] = useState(tokenData);
@@ -19,7 +22,6 @@ const Tokens = () => {
               <th className="text-start p-4 font-medium">Volume</th>
             </tr>
           </thead>
-
           <tbody>
             {tokens.map((token) => {
               return (
@@ -32,9 +34,34 @@ const Tokens = () => {
           </tbody>
         </table>
       </div>
+
+      <Animation index={1} classCss="coin1" tokenLogo={tokensLogo[2]} />
+      <Animation index={2} classCss="coin2" tokenLogo={tokensLogo[1]} />
+      <Animation index={3} classCss="coin3" tokenLogo={tokensLogo[4]} />
+      <Animation index={4} classCss="coin4" tokenLogo={tokensLogo[7]} />
+      <Animation index={5} classCss="coin5" tokenLogo={tokensLogo[10]} />
+      <div className="absolute w-32 bottom-0 left-12 drop-shadow-lg">
+        <img src={shocked} alt="money.png" />
+      </div>
     </div>
   );
 };
+
+interface AnimationProps {
+  index: number;
+  classCss: string;
+  tokenLogo: string;
+}
+const Animation = ({index, classCss, tokenLogo}: AnimationProps) => {
+  return (
+    <div key={index} className={`absolute z-10 ${classCss}`}>
+      <div className="relative">
+        <img className="w-14" src={coin} alt="coin" />
+        <img className="w-6 absolute bottom-1/2 translate-y-1/2 right-1/2 translate-x-1/2" src={tokenLogo} alt="token" />
+      </div>
+    </div>
+  );
+}
 
 interface TableRowsProps {
   token: Token;

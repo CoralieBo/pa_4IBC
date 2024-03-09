@@ -1,0 +1,41 @@
+.coin1 {
+    top: -40vh;
+    left: 0;
+    animation: scroll 25s linear infinite;
+}
+
+.coin2 {
+    top: -40vh;
+    left: 3rem;
+    animation: scroll 20s linear infinite;
+}
+
+.coin3 {
+    top: -40vh;
+    left: 8rem;
+    animation: scroll 28s linear infinite;
+}
+
+.coin4 {
+    top: -40vh;
+    left: 7rem;
+    animation: scroll 15s linear infinite;
+}
+
+.coin5 {
+    top: -40vh;
+    left: 2rem;
+    animation: scroll 13s linear infinite;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(80vh) rotate(360deg);
+    }
+    100% {
+        transform: translateY(140vh) rotate(720deg);
+    }
+}
