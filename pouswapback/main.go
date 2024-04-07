@@ -20,15 +20,33 @@ func main() {
 	app := fiber.New(fiber.Config{})
 	config := NewConfig()
 
+	// Middleware CORS pour autoriser toutes les adresses IP
+	app.Use(func(c *fiber.Ctx) error {
+		// Si la requête est une requête preflight (OPTIONS), retourner une réponse immédiatement avec les en-têtes CORS appropriés
+		if c.Method() == fiber.MethodOptions {
+			c.Set("Access-Control-Allow-Origin", "*")
+			c.Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+			c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+			return c.SendStatus(fiber.StatusOK)
+		}
+
+		// Sinon, continuer à traiter les autres types de requêtes en définissant les en-têtes CORS normalement
+		c.Set("Access-Control-Allow-Origin", "*")
+		c.Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		return c.Next()
+	})
+
 	db.ConnectDatabase(config.DbHost, config.DbUser, config.DbPassword, config.DbName, config.DbPort)
 
 	app.Route("/users", func(api fiber.Router) {
 		api.Get("/", controllers.GetAllUsers).Name("getAll")
 		api.Post("/add", controllers.AddUser).Name("add")
-		api.Get("/getByPK", controllers.GetUserByPK).Name("getByPK")
+		api.Get("/getByPK/:publicKey", controllers.GetUserByPK).Name("getByPK")
 	})
 
-	app.Listen(":3000")
+	log.Info("Server started on port 3001")
+	app.Listen(":3001")
 
 }
 
