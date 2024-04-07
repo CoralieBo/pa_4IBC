@@ -2,18 +2,26 @@
 
 pragma solidity 0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import "./IFactory.sol";
 
 contract PouPools {
     ERC20 tokenA;
     ERC20 tokenB;
     uint public k; // Constant used to calculate the price (tokenA * tokenB = k)
+    IPouFactory factory;
 
-    constructor(ERC20 _tokenA, ERC20 _tokenB, uint256 _amountA, uint256 _amountB){
+    constructor(ERC20 _tokenA, ERC20 _tokenB, address _factory){
         tokenA = _tokenA;
         tokenB = _tokenB;
+        factory = IPouFactory(_factory);
+    }
+
+    function initPool(uint256 _amountA, uint256 _amountB) external {
+        require(k == 0, "Pool already initialized");
         k = _amountA * _amountB;
-        addLiquidity(_amountA, _amountB);
+        tokenA.transferFrom(msg.sender, address(this), _amountA);
+        tokenB.transferFrom(msg.sender, address(this), _amountB);
     }
 
     function addLiquidity(uint256 _amountA, uint256 _amountB) public { // Pour calculer en front combien envoyé de B il faut faire : B = k / A
@@ -27,15 +35,19 @@ contract PouPools {
     function swapAforB(uint256 _amountA) external {
         require(tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
         uint256 _amountB = getExactTokenB(_amountA);
+        uint256 fees = factory.getFees();
         tokenA.transferFrom(msg.sender, address(this), _amountA);
-        tokenB.transfer(msg.sender, _amountB);
+        tokenB.transfer(msg.sender, _amountB * (100 - fees) / 100); // On envoie 100% - fees%
+        tokenB.transfer(address(factory), _amountB * fees / 100); // On envoie les fees à la factory
     }
 
     function swapBforA(uint256 _amountB) external {
         require(tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
         uint256 _amountA = getExactTokenA(_amountB);
+        uint256 fees = factory.getFees();
         tokenB.transferFrom(msg.sender, address(this), _amountB);
-        tokenA.transfer(msg.sender, _amountA);
+        tokenA.transfer(msg.sender, _amountA * (100 - fees) / 100); // On envoie 100% - fees%
+        tokenA.transfer(address(factory), _amountA * fees / 100); // On envoie les fees à la factory
     }
 
     function getExactTokenA(uint256 _amountB) view public returns(uint256 _amountA) {
@@ -49,11 +61,11 @@ contract PouPools {
     }
 
     function getRateAforB() view external returns(uint256) { // Pour chaque A on a xB
-        return (tokenB.balanceOf(address(this)) / tokenA.balanceOf(address(this))) * 10 ** tokenA.decimals();
+        return tokenB.balanceOf(address(this)) * 10 ** tokenA.decimals() / tokenA.balanceOf(address(this));
     }
 
     function getRateBforA() view external returns(uint256) { // Pour chaque B on a xA
-        return (tokenA.balanceOf(address(this)) / tokenB.balanceOf(address(this))) * 10 ** tokenB.decimals();
+        return tokenA.balanceOf(address(this)) * 10 ** tokenB.decimals() / tokenB.balanceOf(address(this));
     }
 
     function getSupplyA() view public returns(uint256) {
