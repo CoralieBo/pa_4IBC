@@ -4,6 +4,7 @@ pragma solidity 0.8.24;
 
 
 import "./Pools.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 contract PouFactory {
     struct InfosPool {
@@ -11,13 +12,17 @@ contract PouFactory {
         ERC20 tokenB;
     }
 
-    address[] admins;
+    address[] admins; // TODO : Add multisig
     mapping (address => InfosPool) public pools;
     address[] pairsAddresses;
+    ERC20[] public tokens;
+
+    uint256 private fee; // 1% = 100
 
     event NewPoolCreated(address poolAddress);
 
     constructor(){
+        fee = 10; // 0.1%
         admins.push(msg.sender);
     }
 
@@ -42,18 +47,21 @@ contract PouFactory {
         require(_tokenA.allowance(msg.sender, address(this)) >= _amountA * 10 ** _tokenA.decimals(), "no allowance for tokenA");
         require(_tokenB.allowance(msg.sender, address(this)) >= _amountB * 10 ** _tokenB.decimals(), "no allowance for tokenB");
 
-        PouPools newPool = new PouPools(_tokenA, _tokenB, _amountA, _amountB);
+        if(!existToken(_tokenA)){
+            tokens.push(_tokenA);
+        }
+        if(!existToken(_tokenB)){
+            tokens.push(_tokenB);
+        }
+        
+        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this));
+        newPool.initPool(_amountA, _amountB);
         _tokenA.transferFrom(msg.sender, address(newPool), _amountA);
         _tokenB.transferFrom(msg.sender, address(newPool), _amountB);
 
         pools[address(newPool)] = InfosPool(_tokenA, _tokenB);
         pairsAddresses.push(address(newPool));
         emit NewPoolCreated(address(newPool));
-    }
-
-    function test(address _addressA) view public returns(uint256){
-        ERC20 _tokenA = ERC20(_addressA);
-        return _tokenA.allowance(msg.sender, address(this));
     }
 
     function existPair(ERC20 _tokenA, ERC20 _tokenB) view internal returns(bool) {
@@ -70,11 +78,42 @@ contract PouFactory {
         return false;
     }
 
+    function existToken(ERC20 _token) view internal returns(bool) {
+        uint tokensLenght = tokens.length;
+        for (uint i = 0; i < tokensLenght; i++){
+            if(tokens[i] == _token){
+                return true;
+            }
+        }
+        return false;
+    }
+
     function getPairsAddresses() view public returns(address[] memory){
         return pairsAddresses;
     }
 
     function getPairsAddress(uint _pairIndex) view public returns(address){
         return pairsAddresses[_pairIndex];
+    }
+
+    function getFees() view external returns(uint256){
+        return fee;
+    }
+
+    function setFees(uint256 _fee) external onlyAdmin {
+        fee = _fee;
+    }
+
+    function getTokensAmountToClaim() view external returns(uint256[] memory, ERC20[] memory){
+        uint tokensLenght = tokens.length;
+        uint[] memory tokensAmountToClaim = new uint[](tokensLenght);
+        for (uint i = 0; i < tokensLenght; i++){
+            tokensAmountToClaim[i] = tokens[i].balanceOf(address(this));
+        }
+        return (tokensAmountToClaim, tokens);
+    }
+
+    function claimTokens(ERC20 _token) external onlyAdmin {
+        _token.transfer(msg.sender, _token.balanceOf(address(this)));
     }
 }
