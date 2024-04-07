@@ -11,13 +11,6 @@ const Home = () => {
                     <label className="text-colors-green1"> Pouswap</label>
                 </h1>
                 <p className="text-colors-black2 text-3xl px-4 md:px-0 md:text-4xl md:w-10/12 italic text-center md:text-left">Empowering the future, one decentralized exchange at a time.</p>
-                <div className="md:w-2/3 flex justify-center">
-                    <div className="sm:flex sm:gap-4 hidden mt-3 md:block text-xs">
-                        <div className="connectButton">
-                            <ConnectButton />
-                        </div>
-                    </div>
-                </div>
             </div>
             <div className="hidden -mt-20 rotate-12 h-[125vh] w-2/5 overflow-hidden md:grid grid-cols-4 gap-2 content z-0">
                 <div>
