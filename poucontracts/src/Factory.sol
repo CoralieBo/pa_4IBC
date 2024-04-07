@@ -32,8 +32,8 @@ contract PouFactory {
         for(uint i = 0; i < size; i++){
             if(admins[i] == msg.sender){
                 isAdmin = true;
+                break;
             }
-            break;
         }
         require(isAdmin, "You are not admin");
         _;
