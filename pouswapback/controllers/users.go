@@ -7,8 +7,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type UserRequest struct {
+	PublicKey string `json:"publicKey"`
+	Signature string `json:"signature"`
+}
+
 func AddUser(c *fiber.Ctx) error {
-	user := models.User{PublicKey: "0x...", Role: "admin"} // change to the request body
+	var userReq UserRequest
+	if err := c.BodyParser(&userReq); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
+	}
+	user := models.User{PublicKey: userReq.PublicKey, Signature: userReq.Signature, Role: "user", Status: "active"}
 	err := db.DB.CreateUser(user)
 	if err != nil {
 		return c.SendString(err.Error())
@@ -17,9 +26,10 @@ func AddUser(c *fiber.Ctx) error {
 }
 
 func GetUserByPK(c *fiber.Ctx) error {
-	user, err := db.DB.GetUserByPublicKey("0x...")
+	publicKey := c.Params("publicKey")
+	user, err := db.DB.GetUserByPublicKey(publicKey)
 	if err != nil {
-		return c.SendString(err.Error())
+		return c.SendString("")
 	}
 	return c.JSON(user)
 }
