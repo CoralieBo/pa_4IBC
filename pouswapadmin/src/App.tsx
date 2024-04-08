@@ -2,6 +2,7 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard/Dashboard';
 import Navbar from './components/Navbar/Navbar';
+import Users from './components/Users/Users';
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
       <div className='w-5/6 h-screen overflow-scroll bg-colors-gray1 rounded-s-3xl'>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/users" element={<div />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/tokens" element={<div />} />
           <Route path="/fees" element={<div />} />
           <Route path="/admins" element={<div />} />
