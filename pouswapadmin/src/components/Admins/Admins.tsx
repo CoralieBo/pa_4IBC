@@ -5,23 +5,17 @@ import User from "../../services/User";
 import { cropAddress } from "../../asset/utils/cropAddress";
 import StackedNotifications from "../Notifications/Notifications";
 
-enum ActionType {
-    ban = "ban",
-    unban = "unban",
-    upgrade = "upgrade"
-}
-
-const Users = () => {
-    const [users, setUsers] = useState<IUser[] | null>(null);
+const Admins = () => {
+    const [admins, setAdmins] = useState<IUser[] | null>(null);
     const [userSelected, setUserSelected] = useState<IUser | null>(null);
-    const [actionActive, setActionActive] = useState<ActionType | null>(null);
+    const [actionActive, setActionActive] = useState<boolean>(false);
     const [notification, setNotification] = useState<boolean>(false);
 
     useEffect(() => {
         async function fetchDatas() {
             try {
-                const users = await new User().getAll();
-                setUsers(users);
+                const admins = await new User().getAll();
+                setAdmins(admins);
             } catch (e) {
                 console.error(e);
             }
@@ -30,36 +24,23 @@ const Users = () => {
         fetchDatas();
     }, []);
 
-    async function action(user: IUser, actionType: ActionType) {
+    async function action(user: IUser) {
         setUserSelected(user);
-        setActionActive(actionType);
+        setActionActive(true);
     }
 
     async function submit() {
         if (!actionActive || !userSelected) {
             return;
         }
-
-        switch (actionActive) {
-            case ActionType.ban:
-                await new User().update({ ...userSelected, status: "ban" });
-                setNotification(true);
-                break;
-            case ActionType.upgrade:
-                await new User().update({ ...userSelected, role: "admin" });
-                setNotification(true);
-                break;
-            case ActionType.unban:
-                await new User().update({ ...userSelected, status: "active" });
-                setNotification(true);
-                break;
-        }
+        await new User().update({ ...userSelected, role: "user" });
+        setNotification(true);
     }
 
     useEffect(() => {
         if (notification === true) {
             setUserSelected(null);
-            setActionActive(null);
+            setActionActive(false);
         }
     }, [notification]);
 
@@ -94,15 +75,13 @@ const Users = () => {
                                             Signature
                                         </th>
 
-                                        <th scope="col" className="px-4 py-3.5 text-sm font-normal text-gray-500 text-center">Status</th>
-
                                         <th scope="col" className="relative py-3.5 px-4">
                                             <span className="sr-only">Edit</span>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {users && users.map((user, index) => (
+                                    {admins && admins.map((user, index) => (
                                         <tr key={index}>
                                             <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
                                                 <div>
@@ -118,33 +97,10 @@ const Users = () => {
                                                 </div>
                                             </td>
 
-                                            <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
-                                                {user.status === "active" ?
-                                                    <div className="inline px-3 py-1 text-sm font-normal rounded-full text-emerald-500 gap-x-2 bg-emerald-100/60">
-                                                        Active
-                                                    </div>
-                                                    :
-                                                    <div className="inline px-3 py-1 text-sm font-normal rounded-full text-red-500 gap-x-2 bg-red-100/60">
-                                                        Ban
-                                                    </div>
-                                                }
-                                            </td>
-
                                             <td className="px-4 py-4 space-x-2 text-sm text-right whitespace-nowrap">
-                                                {user.status === "active" ?
-                                                    <>
-                                                        <button onClick={() => action(user, ActionType.ban)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-red-400 hover:bg-red-500 focus:outline-none">
-                                                            Ban
-                                                        </button>
-                                                        <button onClick={() => action(user, ActionType.upgrade)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
-                                                            Upgrade to Admin
-                                                        </button>
-                                                    </>
-                                                    :
-                                                    <button onClick={() => action(user, ActionType.unban)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-emerald-400 hover:bg-emerald-500 focus:outline-none">
-                                                        Unban
-                                                    </button>
-                                                }
+                                                <button onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                    Downgrade to User
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -154,12 +110,12 @@ const Users = () => {
                     </div>
                 </div>
             </div>
-            {actionActive !== null &&
+            {actionActive &&
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 rounded-2xl border border-blue-100 bg-white p-4 shadow-lg sm:p-6 lg:p-8" role="alert">
-                    <p className="font-medium sm:text-lg">Are you sure you want to {actionActive} this user ?</p>
+                    <p className="font-medium sm:text-lg">Are you sure you want to downgrade this admin ?</p>
 
                     <p className="mt-4 text-gray-500">
-                        User's public key : {userSelected?.public_key}
+                        Admin's public key : {userSelected?.public_key}
                     </p>
 
                     <div className="mt-6 sm:flex sm:gap-4">
@@ -172,16 +128,16 @@ const Users = () => {
 
                         <button
                             className="mt-2 inline-block w-full rounded-lg bg-gray-100 px-5 py-3 text-center text-sm font-semibold text-gray-600 sm:mt-0 sm:w-auto"
-                            onClick={() => setActionActive(null)}
+                            onClick={() => setActionActive(false)}
                         >
                             Go back
                         </button>
                     </div>
                 </div>
             }
-            {notification && <StackedNotifications text={`User ${cropAddress(userSelected?.public_key)} ${actionActive}`} id={1} setShow={setNotification} />}
+            {notification && <StackedNotifications text={`Admin ${cropAddress(userSelected?.public_key)} downgrade to user`} id={1} setShow={setNotification} />}
         </section>
     );
 }
 
-export default Users;
+export default Admins;
