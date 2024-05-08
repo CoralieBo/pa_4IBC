@@ -42,6 +42,7 @@ func main() {
 	app.Route("/users", func(api fiber.Router) {
 		api.Get("/", controllers.GetAllUsers).Name("getAll")
 		api.Post("/add", controllers.AddUser).Name("add")
+		api.Put("/update", controllers.UpdateUser).Name("update")
 		api.Get("/getByPK/:publicKey", controllers.GetUserByPK).Name("getByPK")
 	})
 

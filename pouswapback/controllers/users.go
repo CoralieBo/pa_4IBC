@@ -25,6 +25,18 @@ func AddUser(c *fiber.Ctx) error {
 	return c.SendString("User added successfully")
 }
 
+func UpdateUser(c *fiber.Ctx) error {
+	var user models.User
+	if err := c.BodyParser(&user); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
+	}
+	err := db.DB.UpdateUser(user)
+	if err != nil {
+		return c.SendString(err.Error())
+	}
+	return c.SendString("User updated successfully")
+}
+
 func GetUserByPK(c *fiber.Ctx) error {
 	publicKey := c.Params("publicKey")
 	user, err := db.DB.GetUserByPublicKey(publicKey)

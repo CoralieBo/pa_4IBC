@@ -4,3 +4,13 @@
 2024/05/08 16:01:57.056811 db.go:34: [Info] Database connected successfully
 2024/05/08 16:01:57.056848 db.go:36: [Info] running migrations
 2024/05/08 16:01:57.237022 main.go:48: [Info] Server started on port 3001
+2024/05/08 16:16:58.281441 main.go:18: [Info] Starting server...
+2024/05/08 16:16:58.281871 db.go:23: [Info] Connecting to database with : host=localhost user=postgres password=admin dbname=pouswap port=5432 sslmode=disable TimeZone=Asia/Shanghai
+2024/05/08 16:16:58.332233 db.go:34: [Info] Database connected successfully
+2024/05/08 16:16:58.332283 db.go:36: [Info] running migrations
+2024/05/08 16:16:58.479870 main.go:48: [Info] Server started on port 3001
+2024/05/08 16:18:28.450677 main.go:18: [Info] Starting server...
+2024/05/08 16:18:28.451181 db.go:23: [Info] Connecting to database with : host=localhost user=postgres password=admin dbname=pouswap port=5432 sslmode=disable TimeZone=Asia/Shanghai
+2024/05/08 16:18:28.508406 db.go:34: [Info] Database connected successfully
+2024/05/08 16:18:28.508467 db.go:36: [Info] running migrations
+2024/05/08 16:18:28.665657 main.go:49: [Info] Server started on port 3001
