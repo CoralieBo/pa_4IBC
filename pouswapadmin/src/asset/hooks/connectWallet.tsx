@@ -25,10 +25,10 @@ export default function ConnectButton(){
                 if (signature) {
                     try {
                         const user = await new User().getOneByPublicKey(address);
-                        // if (user.role !== "admin") {
-                        //     disconnect();
-                        //     return;
-                        // }
+                        if (user.role !== "admin") {
+                            disconnect();
+                            return;
+                        }
                         setIsAdmin(true);
                     } catch (error) {
                         disconnect();

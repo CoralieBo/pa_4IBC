@@ -4,23 +4,24 @@ import { IUser } from "../../interfaces/Users";
 import User from "../../services/User";
 import { cropAddress } from "../../asset/utils/cropAddress";
 import StackedNotifications from "../Notifications/Notifications";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 const Admins = () => {
     const [admins, setAdmins] = useState<IUser[] | null>(null);
     const [userSelected, setUserSelected] = useState<IUser | null>(null);
     const [actionActive, setActionActive] = useState<boolean>(false);
     const [notification, setNotification] = useState<boolean>(false);
+    const { address } = useWeb3ModalAccount();
 
-    useEffect(() => {
-        async function fetchDatas() {
-            try {
-                const admins: IUser[] = await new User().getAll();
-                setAdmins(admins.filter((user) => user.role === "admin"));
-            } catch (e) {
-                console.error(e);
-            }
+    async function fetchDatas() {
+        try {
+            const admins: IUser[] = await new User().getAll();
+            setAdmins(admins.filter((user) => user.role === "admin" && user.public_key !== address));
+        } catch (e) {
+            console.error(e);
         }
-
+    }
+    useEffect(() => {
         fetchDatas();
     }, []);
 
@@ -35,6 +36,7 @@ const Admins = () => {
         }
         await new User().update({ ...userSelected, role: "user" });
         setNotification(true);
+        fetchDatas();
     }
 
     useEffect(() => {

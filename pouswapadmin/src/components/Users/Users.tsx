@@ -17,16 +17,16 @@ const Users = () => {
     const [actionActive, setActionActive] = useState<ActionType | null>(null);
     const [notification, setNotification] = useState<boolean>(false);
 
-    useEffect(() => {
-        async function fetchDatas() {
-            try {
-                const users: IUser[] = await new User().getAll();
-                setUsers(users.filter((user) => user.role !== "admin"));
-            } catch (e) {
-                console.error(e);
-            }
+    async function fetchDatas() {
+        try {
+            const users: IUser[] = await new User().getAll();
+            setUsers(users.filter((user) => user.role !== "admin"));
+        } catch (e) {
+            console.error(e);
         }
+    }
 
+    useEffect(() => {
         fetchDatas();
     }, []);
 
@@ -54,6 +54,7 @@ const Users = () => {
                 setNotification(true);
                 break;
         }
+        fetchDatas();
     }
 
     useEffect(() => {
