@@ -14,8 +14,8 @@ const Admins = () => {
     useEffect(() => {
         async function fetchDatas() {
             try {
-                const admins = await new User().getAll();
-                setAdmins(admins);
+                const admins: IUser[] = await new User().getAll();
+                setAdmins(admins.filter((user) => user.role === "admin"));
             } catch (e) {
                 console.error(e);
             }
