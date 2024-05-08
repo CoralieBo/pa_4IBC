@@ -1,5 +1,4 @@
-version: "3.8"
-
+version: "3.9"
 services:
   backend:
     build:
@@ -20,16 +19,27 @@ services:
       - backend
 
   database:
-    image: mysql:latest
+    image: postgres:15.4-alpine
+    platform: linux/amd64
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: pouswap
-      MYSQL_USER: user
-      MYSQL_PASSWORD: user
+      POSTGRES_DB: ${DB_NAME:-changeme}
+      POSTGRES_USER: ${DB_USER:-changeme}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
     ports:
-      - "3306:3306" # TODO: Adapter le port si nécessaire
-    volumes:
-      - mysql_data:/var/lib/mysql
+      - "5432:5432"
 
-volumes:
-  mysql_data:
+  pgadmin:
+    image: dpage/pgadmin4:6.3
+    platform: linux/amd64
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@exemple.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin4admin
+    ports:
+      - "80:80"
