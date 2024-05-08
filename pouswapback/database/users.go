@@ -10,6 +10,14 @@ func (d *DatabasePostgres) CreateUser(user models.User) error {
 	return nil
 }
 
+func (d *DatabasePostgres) UpdateUser(user models.User) error {
+	result := d.Db.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
 func (d *DatabasePostgres) GetUserByPublicKey(publicKey string) (models.User, error) {
 	var user models.User
 	result := d.Db.Where("public_key = ?", publicKey).First(&user)
