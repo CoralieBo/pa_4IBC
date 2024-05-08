@@ -23,8 +23,7 @@
   background: var(--button_outline_color);
 }
 
-.connectButton button {
-  display: block;
+.connectButton span {
   box-sizing: border-box;
   // padding: 0.75em 1.5em;
   border: 2px solid var(--button_outline_color);
@@ -36,12 +35,12 @@
   font-size: 0.9rem;
 }
 
-button:hover button {
+button:hover span {
   /* Pull the button upwards when hovered */
   transform: translateY(-0.33em);
 }
 
-button:active button {
+button:active span {
   /* Push the button downwards when pressed */
   transform: translateY(0);
 }
