@@ -19,3 +19,17 @@
 2024/05/08 16:22:03.825134 db.go:34: [Info] Database connected successfully
 2024/05/08 16:22:03.825209 db.go:36: [Info] running migrations
 2024/05/08 16:22:03.976204 main.go:49: [Info] Server started on port 3001
+2024/05/08 18:10:05.882948 main.go:18: [Info] Starting server...
+2024/05/08 18:10:05.883253 db.go:23: [Info] Connecting to database with : host=localhost user=postgres password=admin dbname=pouswap port=5432 sslmode=disable TimeZone=Asia/Shanghai
+2024/05/08 18:10:05.886029 db.go:30: [Error] failed to connect to `host=localhost user=postgres database=pouswap`: dial error (dial tcp 127.0.0.1:5432: connect: connection refused)
+2024/05/08 18:10:05.886048 db.go:31: [Fatal] Error connecting to database : failed to connect to `host=localhost user=postgres database=pouswap`: dial error (dial tcp 127.0.0.1:5432: connect: connection refused)
+2024/05/08 18:15:13.237062 main.go:18: [Info] Starting server...
+2024/05/08 18:15:13.237824 db.go:23: [Info] Connecting to database with : host=localhost user=postgres password=admin dbname=pouswap port=5432 sslmode=disable TimeZone=Asia/Shanghai
+2024/05/08 18:15:13.272742 db.go:34: [Info] Database connected successfully
+2024/05/08 18:15:13.272769 db.go:36: [Info] running migrations
+2024/05/08 18:15:13.441305 main.go:49: [Info] Server started on port 3001
+2024/05/08 19:31:00.704782 main.go:18: [Info] Starting server...
+2024/05/08 19:31:00.705659 db.go:23: [Info] Connecting to database with : host=localhost user=postgres password=admin dbname=pouswap port=5432 sslmode=disable TimeZone=Asia/Shanghai
+2024/05/08 19:31:00.735017 db.go:34: [Info] Database connected successfully
+2024/05/08 19:31:00.735056 db.go:36: [Info] running migrations
+2024/05/08 19:31:00.895031 main.go:49: [Info] Server started on port 3001

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Title from "../Title/Title";
 import { IUser } from "../../interfaces/Users";
 import User from "../../services/User";
 import { cropAddress } from "../../asset/utils/cropAddress";
 import StackedNotifications from "../Notifications/Notifications";
+import { SafeContext } from "../../asset/hooks/safe";
+import { Link } from "react-router-dom";
 
 enum ActionType {
     ban = "ban",
@@ -16,6 +18,7 @@ const Users = () => {
     const [userSelected, setUserSelected] = useState<IUser | null>(null);
     const [actionActive, setActionActive] = useState<ActionType | null>(null);
     const [notification, setNotification] = useState<boolean>(false);
+    const { addAdmin } = useContext(SafeContext);
 
     async function fetchDatas() {
         try {
@@ -46,7 +49,8 @@ const Users = () => {
                 setNotification(true);
                 break;
             case ActionType.upgrade:
-                await new User().update({ ...userSelected, role: "admin" });
+                await addAdmin({ ownerAddress: userSelected?.public_key });
+                await new User().update({ ...userSelected, role: "pending" });
                 setNotification(true);
                 break;
             case ActionType.unban:
@@ -134,12 +138,18 @@ const Users = () => {
                                             <td className="px-4 py-4 space-x-2 text-sm text-right whitespace-nowrap">
                                                 {user.status === "active" ?
                                                     <>
-                                                        <button onClick={() => action(user, ActionType.ban)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-red-400 hover:bg-red-500 focus:outline-none">
+                                                        <button disabled={user.role === "pending"} onClick={() => action(user, ActionType.ban)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-red-400 hover:bg-red-500 focus:outline-none">
                                                             Ban
                                                         </button>
-                                                        <button onClick={() => action(user, ActionType.upgrade)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
-                                                            Upgrade to Admin
-                                                        </button>
+                                                        {user.role === "pending" ?
+                                                            <Link to={"/Pending"} className="px-2 py-1.5 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                                Upgrade requested
+                                                            </Link>
+                                                            :
+                                                            <button onClick={() => action(user, ActionType.upgrade)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                                Upgrade to Admin
+                                                            </button>
+                                                        }
                                                     </>
                                                     :
                                                     <button onClick={() => action(user, ActionType.unban)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-emerald-400 hover:bg-emerald-500 focus:outline-none">

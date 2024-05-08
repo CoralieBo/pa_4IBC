@@ -46,7 +46,7 @@ export default function ConnectButton(){
     }, [isConnected, address])
 
     return (
-        <button className='text-white' onClick={() => open()}>
+        <div className='text-white' onClick={() => open()}>
             {
                 isConnected ?
                     <motion.button
@@ -67,6 +67,6 @@ export default function ConnectButton(){
                         Connect Wallet
                     </motion.button>
             }
-        </button>
+        </div>
     )
 }
