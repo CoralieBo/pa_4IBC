@@ -25,10 +25,10 @@ export default function ConnectButton(){
                 if (signature) {
                     try {
                         const user = await new User().getOneByPublicKey(address);
-                        // if (user.role !== "admin") {
-                        //     disconnect();
-                        //     return;
-                        // }
+                        if (user.role !== "admin") {
+                            disconnect();
+                            return;
+                        }
                         setIsAdmin(true);
                     } catch (error) {
                         disconnect();
@@ -46,7 +46,7 @@ export default function ConnectButton(){
     }, [isConnected, address])
 
     return (
-        <button className='text-white' onClick={() => open()}>
+        <div className='text-white' onClick={() => open()}>
             {
                 isConnected ?
                     <motion.button
@@ -67,6 +67,6 @@ export default function ConnectButton(){
                         Connect Wallet
                     </motion.button>
             }
-        </button>
+        </div>
     )
 }
