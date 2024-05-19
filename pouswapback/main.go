@@ -46,6 +46,12 @@ func main() {
 		api.Get("/getByPK/:publicKey", controllers.GetUserByPK).Name("getByPK")
 	})
 
+	app.Route("/tokens", func(api fiber.Router) {
+		api.Get("/", controllers.GetAllTokens).Name("getAll")
+		api.Post("/add", controllers.AddToken).Name("add")
+		api.Put("/update", controllers.UpdateToken).Name("update")
+	})
+
 	log.Info("Server started on port 3001")
 	app.Listen(":3001")
 
