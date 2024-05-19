@@ -12,13 +12,13 @@ const Admins = () => {
     const [userSelected, setUserSelected] = useState<IUser | null>(null);
     const [actionActive, setActionActive] = useState<boolean>(false);
     const [notification, setNotification] = useState<boolean>(false);
-    const { address } = useWeb3ModalAccount();
     const { accountAddress } = useContext(SafeContext);
+    const { address } = useWeb3ModalAccount();
 
     async function fetchDatas() {
         try {
             const admins: IUser[] = await new User().getAll();
-            setAdmins(admins.filter((user) => user.role === "admin" && user.public_key !== address));
+            setAdmins(admins.filter((user) => user.role === "admin"));
         } catch (e) {
             console.error(e);
         }
@@ -94,7 +94,7 @@ const Admins = () => {
                                                 </div>
                                             </td>
                                             <td className="px-12 py-4 text-sm font-medium whitespace-nowrap text-center">
-                                                <h4 className="text-gray-700">{cropAddress(user.public_key)}</h4>
+                                                <h4 className="text-gray-700">{cropAddress(user.public_key)} {user.public_key == address && "(me)"}</h4>
                                             </td>
                                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
                                                 <div>
@@ -103,7 +103,7 @@ const Admins = () => {
                                             </td>
 
                                             <td className="px-4 py-4 space-x-2 text-sm text-right whitespace-nowrap">
-                                                <button onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                <button disabled={user.public_key == address} onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
                                                     Downgrade to User
                                                 </button>
                                             </td>
