@@ -5,14 +5,16 @@ pragma solidity 0.8.24;
 
 import "./Pools.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-contracts/contracts/access/Ownable.sol";
+import "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
+import "openzeppelin-contracts/contracts/utils/math/Math.sol";
 
-contract PouFactory {
+contract PouFactory is Ownable, ReentrancyGuard {
     struct InfosPool {
         ERC20 tokenA;
         ERC20 tokenB;
     }
 
-    address[] admins; // TODO : Add multisig
     mapping (address => InfosPool) public pools;
     address[] pairsAddresses;
     ERC20[] public tokens;
@@ -21,31 +23,19 @@ contract PouFactory {
 
     event NewPoolCreated(address poolAddress);
 
-    constructor(){
+    constructor() Ownable(msg.sender){
         fee = 10; // 0.1%
-        admins.push(msg.sender);
     }
 
-    modifier onlyAdmin(){
-        uint size = admins.length;
-        bool isAdmin = false;
-        for(uint i = 0; i < size; i++){
-            if(admins[i] == msg.sender){
-                isAdmin = true;
-                break;
-            }
-        }
-        require(isAdmin, "You are not admin");
-        _;
-    }
-
-    function createPool(address _addressA, address _addressB, uint256 _amountA, uint256 _amountB) external {
+    function createPool(address _addressA, address _addressB, uint256 _amountA, uint256 _amountB) external nonReentrant {
         ERC20 _tokenA = ERC20(_addressA);
         ERC20 _tokenB = ERC20(_addressB);
 
         require(!existPair(_tokenA, _tokenB), "Pool already exist");
-        require(_tokenA.allowance(msg.sender, address(this)) >= _amountA * 10 ** _tokenA.decimals(), "no allowance for tokenA");
-        require(_tokenB.allowance(msg.sender, address(this)) >= _amountB * 10 ** _tokenB.decimals(), "no allowance for tokenB");
+        (, uint256 allowanceA) = Math.tryMul(_amountA, 10 ** _tokenA.decimals());
+        require(_tokenA.allowance(msg.sender, address(this)) >= allowanceA, "no allowance for tokenA");
+        (, uint256 allowanceB) = Math.tryMul(_amountB, 10 ** _tokenB.decimals());
+        require(_tokenB.allowance(msg.sender, address(this)) >= allowanceB, "no allowance for tokenB");
 
         if(!existToken(_tokenA)){
             tokens.push(_tokenA);
@@ -100,7 +90,7 @@ contract PouFactory {
         return fee;
     }
 
-    function setFees(uint256 _fee) external onlyAdmin {
+    function setFees(uint256 _fee) external onlyOwner {
         fee = _fee;
     }
 
@@ -113,7 +103,7 @@ contract PouFactory {
         return (tokensAmountToClaim, tokens);
     }
 
-    function claimTokens(ERC20 _token) external onlyAdmin {
+    function claimTokens(ERC20 _token) external onlyOwner {
         _token.transfer(msg.sender, _token.balanceOf(address(this)));
     }
 }
