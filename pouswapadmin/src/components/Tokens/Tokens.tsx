@@ -11,6 +11,8 @@ const Tokens = () => {
     async function fetchDatas() {
         try {
             const tokens: IToken[] = await new Token().getAll();
+            console.log(tokens);
+
             setTokens(tokens);
         } catch (e) {
             console.error(e);
@@ -20,6 +22,19 @@ const Tokens = () => {
     useEffect(() => {
         fetchDatas();
     }, []);
+
+    async function create() {
+        try {
+            const name = (document.getElementById("name") as HTMLInputElement).value;
+            const symbol = (document.getElementById("symbole") as HTMLInputElement).value;
+            const address = (document.getElementById("address") as HTMLInputElement).value;
+            const logo = (document.getElementById("logo") as HTMLInputElement).files?.[0];
+            await new Token().create(name, symbol, address, logo?.name!, 0);
+            fetchDatas();
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     return (
         <section className="mx-auto max-w-7xl px-4 py-8 text-colors-black1">
@@ -70,20 +85,20 @@ const Tokens = () => {
                                         <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
                                         </td>
                                         <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
-                                            <input type="text" placeholder="Name" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
+                                            <input type="text" id="name" placeholder="Name" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
                                         </td>
                                         <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
-                                            <input type="text" placeholder="Symbol" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
+                                            <input type="text" id="symbole" placeholder="Symbole" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
                                         </td>
                                         <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
-                                            <input type="text" placeholder="Address" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
+                                            <input type="text" id="address" placeholder="Address" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
                                         </td>
                                         <td className="px-12 py-4 text-sm font-medium whitespace-nowrap flex justify-center">
-                                            <input type="file" accept="image/*" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
+                                            <input type="file" id="logo" accept="image/*" className="w-full px-3 py-2 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
                                         </td>
 
                                         <td className="px-4 py-4 space-x-2 text-sm text-center whitespace-nowrap">
-                                            <button onClick={() => { }} className="px-3 py-2 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                            <button onClick={create} className="px-3 py-2 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
                                                 Add
                                             </button>
                                         </td>
@@ -102,7 +117,7 @@ const Tokens = () => {
                                             </td>
                                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
                                                 <div>
-                                                    <h4 className="text-gray-700">{token.symbol}</h4>
+                                                    <h4 className="text-gray-700">{token.symbole}</h4>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
@@ -111,7 +126,7 @@ const Tokens = () => {
                                                 </div>
                                             </td>
                                             <td className="px-12 py-4 text-sm font-medium whitespace-nowrap flex justify-center">
-                                                <img src={token.logoURL} alt="logo" className="w-8 h-8" />
+                                                <img src={`${token.logoURL}`} alt="logo" className="w-8 h-8" />
                                             </td>
 
                                             <td className="px-4 py-4 space-x-2 text-sm text-right whitespace-nowrap">
