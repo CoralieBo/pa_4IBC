@@ -59,7 +59,7 @@ function App() {
       :
       <div className="bg-colors-green1 w-full h-screen flex">
         <Navbar />
-        <div className='w-5/6 h-screen overflow-scroll bg-colors-gray1 rounded-s-3xl'>
+        <div className='w-5/6 h-screen overflow-y-scroll overflow-x-hidden bg-colors-gray1 rounded-s-3xl'>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
