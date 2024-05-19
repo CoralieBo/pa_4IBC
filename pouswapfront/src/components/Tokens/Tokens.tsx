@@ -1,6 +1,6 @@
 import "./Tokens.scss";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import shocked from "../../utils/asset/images/shocked.png";
 import coin from "../../utils/asset/images/coin.png";
 import { tokens as tokensLogo } from "../../utils/asset/tokens";
@@ -17,8 +17,8 @@ const Tokens = () => {
             <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
               <th className="pl-4 w-8">#</th>
               <th className="text-start p-4 font-medium">Token name</th>
+              <th className="text-start p-4 font-medium">Address</th>
               <th className="text-start p-4 font-medium">Price</th>
-              <th className="text-start p-4 font-medium">TVL</th>
               <th className="text-start p-4 font-medium">Volume</th>
             </tr>
           </thead>
@@ -90,15 +90,15 @@ const TableRows = ({ token }: TableRowsProps) => {
         </div>
       </td>
 
+      <td className="p-4">
+        <span>
+          {token.address.slice(0, 5)}...{token.address.slice(-5)}
+        </span>
+      </td>
+      
       <td className="p-4 font-medium">
         <span>
           ${token.price.toLocaleString("en-US", {})}
-        </span>
-      </td>
-
-      <td className="p-4">
-        <span>
-          ${token.tvl.toLocaleString("en-US", {})}
         </span>
       </td>
 
@@ -119,7 +119,7 @@ interface Token {
   symbol: string;
   logoURL: string;
   price: number;
-  tvl: number;
+  address: string;
   volume: number;
 }
 
@@ -130,7 +130,7 @@ const tokenData: Token[] = [
     symbol: "BTC",
     logoURL: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
     price: 50000,
-    tvl: 1000000000,
+    address: "0xe0f5206bbd039e7b0592d8918820024e2a7437b9",
     volume: 100000000,
   },
   {
@@ -139,7 +139,7 @@ const tokenData: Token[] = [
     symbol: "ETH",
     logoURL: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
     price: 3000,
-    tvl: 500000000,
+    address: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     volume: 50000000,
   },
   {
@@ -148,7 +148,7 @@ const tokenData: Token[] = [
     symbol: "BNB",
     logoURL: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
     price: 500,
-    tvl: 100000000,
+    address: "0x80fb784b7ed66730e8b1dbd9820afd29931aab03",
     volume: 10000000,
   },
   {
@@ -157,7 +157,7 @@ const tokenData: Token[] = [
     symbol: "ADA",
     logoURL: "https://cryptologos.cc/logos/cardano-ada-logo.png",
     price: 2,
-    tvl: 50000000,
+    address: "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
     volume: 5000000,
   },
   {
@@ -166,7 +166,7 @@ const tokenData: Token[] = [
     symbol: "SOL",
     logoURL: "https://cryptologos.cc/logos/solana-sol-logo.png",
     price: 200,
-    tvl: 10000000,
+    address: "0x022e292b44b5a146f2e8ee36f4d4a5dd2b5c6444",
     volume: 1000000,
   },
   {
@@ -175,7 +175,7 @@ const tokenData: Token[] = [
     symbol: "DOT",
     logoURL: "https://cryptologos.cc/logos/polkadot-new-dot-logo.png",
     price: 50,
-    tvl: 5000000,
+    address: "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
     volume: 500000,
   },
   {
@@ -184,7 +184,7 @@ const tokenData: Token[] = [
     symbol: "LINK",
     logoURL: "https://cryptologos.cc/logos/chainlink-link-logo.png",
     price: 30,
-    tvl: 1000000,
+    address: "0x514910a225c877cf53a699ca1d0d6b88401f4e2d",
     volume: 100000,
   },
   {
@@ -193,7 +193,7 @@ const tokenData: Token[] = [
     symbol: "LTC",
     logoURL: "https://cryptologos.cc/logos/litecoin-ltc-logo.png",
     price: 150,
-    tvl: 500000,
+    address: "0x4338665cbb7b2485a8855a139b75d5e34ab0db94",
     volume: 50000,
   },
 ];
