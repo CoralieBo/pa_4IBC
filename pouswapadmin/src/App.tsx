@@ -9,6 +9,7 @@ import ConnectButton from './asset/hooks/connectWallet';
 import { useContext, useState } from 'react';
 import { AdminContext } from './asset/hooks/isAdmin';
 import PendingTx from './components/PendingTx/PendingTx';
+import Tokens from './components/Tokens/Tokens';
 
 // 1. Get projectId
 const projectId = 'c4c9fb94605ef75f7878b0f8f7452e7d'
@@ -63,7 +64,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/tokens" element={<div />} />
+            <Route path="/tokens" element={<Tokens />} />
             <Route path="/fees" element={<div />} />
             <Route path="/admins" element={<Admins />} />
             <Route path="/pending" element={<PendingTx />} />
