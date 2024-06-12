@@ -2,6 +2,6 @@ export interface IToken {
     ID: number;
     name: string;
     symbole: string;
-    logoURL: string;
+    logo: string;
     address: string;
 }

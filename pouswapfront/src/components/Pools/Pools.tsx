@@ -45,9 +45,9 @@ const Pools = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="absolute w-44 rotate-12 top-28 right-44 drop-shadow-lg">
+            {/* <div className="absolute w-44 rotate-12 top-28 right-44 drop-shadow-lg">
                 <img src={money} alt="money.png" />
-            </div>
+            </div> */}
         </div>
     );
 };

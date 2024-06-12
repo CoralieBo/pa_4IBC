@@ -6,7 +6,7 @@ import Users from './components/Users/Users';
 import Admins from './components/Admins/Admins';
 import { createWeb3Modal, defaultConfig, useWeb3ModalAccount } from '@web3modal/ethers/react'
 import ConnectButton from './asset/hooks/connectWallet';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { AdminContext } from './asset/hooks/isAdmin';
 import PendingTx from './components/PendingTx/PendingTx';
 import Tokens from './components/Tokens/Tokens';
