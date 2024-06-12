@@ -15,13 +15,13 @@ function App() {
   const projectId = 'c4c9fb94605ef75f7878b0f8f7452e7d' // METTRE DANS LE .ENV
 
   // 2. Set chains
-  const mainnet = {
-    chainId: 1,
-    name: 'Ethereum',
+  const chains = [{
+    chainId: 11155111,
+    name: 'Sepolia',
     currency: 'ETH',
-    explorerUrl: 'https://etherscan.io',
-    rpcUrl: 'https://cloudflare-eth.com'
-  }
+    explorerUrl: 'https://sepolia.etherscan.io',
+    rpcUrl: process.env.REACT_APP_RPC_URL!
+  }]
 
   // 3. Create modal
   const metadata = {
@@ -33,7 +33,7 @@ function App() {
 
   createWeb3Modal({
     ethersConfig: defaultConfig({ metadata }),
-    chains: [mainnet],
+    chains,
     projectId,
     enableAnalytics: true, // Optional - defaults to your Cloud configuration
     themeVariables: {
