@@ -4,7 +4,6 @@ pragma solidity 0.8.24;
 
 import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
-import "openzeppelin-contracts/contracts/utils/math/Math.sol";
 import "./IFactory.sol";
 
 contract PouPools is ReentrancyGuard {
@@ -35,8 +34,7 @@ contract PouPools is ReentrancyGuard {
     function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant { // Pour calculer en front combien envoyé de B il faut faire : B = k / A
         require(tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
         require(tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
-        (, uint256 const) = Math.tryMul(_amountA, _amountB);
-        require(const == k, "The ratio is bad");
+        require(_amountA * _amountB == k, "The ratio is bad");
         tokenA.transferFrom(msg.sender, address(this), _amountA);
         tokenB.transferFrom(msg.sender, address(this), _amountB);
         liquidityProvider[msg.sender].amountA += _amountA;
@@ -46,8 +44,7 @@ contract PouPools is ReentrancyGuard {
     function removeLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant {
         require(liquidityProvider[msg.sender].amountA >= _amountA, "Not enough liquidity for tokenA");
         require(liquidityProvider[msg.sender].amountB >= _amountB, "Not enough liquidity for tokenB");
-        (, uint256 const) = Math.tryMul(_amountA, _amountB);
-        require(const == k, "The ratio is bad");
+        require(_amountA * _amountB == k, "The ratio is bad");
         liquidityProvider[msg.sender].amountA -= _amountA;
         liquidityProvider[msg.sender].amountB -= _amountB;
         tokenA.transfer(msg.sender, _amountA);
@@ -59,13 +56,8 @@ contract PouPools is ReentrancyGuard {
         uint256 _amountB = getExactTokenB(_amountA);
         uint256 fees = factory.getFees();
         tokenA.transferFrom(msg.sender, address(this), _amountA);
-        (, uint256 temp) = Math.tryMul(_amountB, fees);
-        (, uint256 amount) = Math.tryDiv(temp, 100);
-        tokenB.transfer(address(factory), amount); // On envoie les fees à la factory (_amountB * fees / 100)
-        (, temp) = Math.trySub(100, fees);
-        (, temp) = Math.tryMul(_amountB, temp);
-        (, amount) = Math.tryDiv(temp, 100);
-        tokenB.transfer(msg.sender, amount); // On envoie 100% - fees% (_amountB * (100 - fees) / 100)
+        tokenB.transfer(address(factory), _amountB * fees / 100); // On envoie les fees à la factory
+        tokenB.transfer(msg.sender, _amountB * (100 - fees) / 100); // On envoie 100% - fees%
     }
 
     function swapBforA(uint256 _amountB) external nonReentrant {
@@ -73,25 +65,16 @@ contract PouPools is ReentrancyGuard {
         uint256 _amountA = getExactTokenA(_amountB);
         uint256 fees = factory.getFees();
         tokenB.transferFrom(msg.sender, address(this), _amountB);
-        (, uint256 temp) = Math.tryMul(_amountA, fees);
-        (, uint256 amount) = Math.tryDiv(temp, 100);
-        tokenA.transfer(address(factory), amount); // On envoie les fees à la factory (_amountA * fees / 100)
-        (, temp) = Math.trySub(100, fees);
-        (, temp) = Math.tryMul(_amountA, temp);
-        (, amount) = Math.tryDiv(temp, 100);
-        tokenA.transfer(msg.sender, amount); // On envoie 100% - fees% (_amountA * (100 - fees) / 100)
+        tokenA.transfer(address(factory), _amountA * fees / 100); // On envoie les fees à la factory
+        tokenA.transfer(msg.sender, _amountA * (100 - fees) / 100); // On envoie 100% - fees%
     }
 
     function getExactTokenA(uint256 _amountB) view public returns(uint256 _amountA) {
-        (, uint256 temp) = Math.tryAdd(_amountB, getSupplyB());
-        (, uint256 newSupplyA) = Math.tryDiv(k, temp);
-        return getSupplyA() - newSupplyA;
+        return getSupplyA() - k / (getSupplyB() + _amountB);
     }
 
     function getExactTokenB(uint256 _amountA) view public returns(uint256 _amountB) {
-        (, uint256 temp) = Math.tryAdd(_amountA, getSupplyA());
-        (, uint256 newSupplyB) = Math.tryDiv(k, temp);
-        return getSupplyB() - newSupplyB;
+        return getSupplyB() - k / (getSupplyA() + _amountA);
     }
 
     function getRateAforB() view external returns(uint256) { // Pour chaque A on a xB

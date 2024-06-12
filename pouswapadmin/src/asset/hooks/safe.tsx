@@ -69,7 +69,9 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
                 ethers,
                 signerOrProvider: signer
             })
-
+            if(await ethAdapter.getChainId() !== ethers.toBigInt(11155111)) {
+                return;
+            }
             const protocolKit = await Safe.create({ ethAdapter, safeAddress })
             setProtocolKit(protocolKit)
 
