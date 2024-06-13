@@ -8,6 +8,7 @@ import Tokens from './components/Tokens/Tokens';
 import Pools from './components/Pools/Pools';
 import Pool from './components/Pools/Pool/Pool';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react'
+import NewPool from './components/Pools/Create/NewPool';
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
         <Route path="/tokens" element={<Tokens />} />
         <Route path="/pools" element={<Pools />} />
         <Route path="/pools/:id" element={<Pool />} />
+        <Route path="/create" element={<NewPool />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </div>
