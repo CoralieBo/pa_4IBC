@@ -1,14 +1,16 @@
 import { tokens } from "../../../utils/asset/tokens";
 import React, { MouseEventHandler, useEffect, useState } from "react";
 import { useAnimate } from "framer-motion";
+import TokenPopup from "../../../popup/TokenPopup";
 
 const NewPool = () => {
     const [scope, animate] = useAnimate();
 
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
-    // const [token1, setToken1] = useState<string>("ETH");
-    // const [token2, setToken2] = useState<string>("POU");
+    const [token1, setToken1] = useState<string>("ETH");
+    const [token2, setToken2] = useState<string>("POU");
+    const [shows, setShows] = useState<boolean[]>([false, false]);
 
     useEffect(() => {
         generateGridCount();
@@ -42,6 +44,8 @@ const NewPool = () => {
 
     return (
         <div className="bg-colors-gray1">
+            {shows[0] && <TokenPopup setToken={setToken1} close={() => setShows([false, false])} />}
+            {shows[1] && <TokenPopup setToken={setToken2} close={() => setShows([false, false])} />}
             <div
                 ref={scope}
                 className="grid h-screen w-full grid-cols-[repeat(auto-fit,_minmax(75px,_1fr))] grid-rows-[repeat(auto-fit,_minmax(75px,_1fr))]"
@@ -62,19 +66,17 @@ const NewPool = () => {
                     <div className='grid grid-cols-2 gap-2 mb-4'>
                         <div>
                             <label className="text-colors-black2 text-sm font-medium">Token 1</label>
-                            <select className="w-full p-2 rounded-lg border border-colors-gray2">
-                                <option disabled selected>Select token</option>
-                                <option value="ETH">ETH</option>
-                                <option value="POU">POU</option>
-                            </select>
+                            <button className="w-full p-2 rounded-lg border border-colors-gray2 bg-white text-left flex items-center justify-between" onClick={() => setShows([true, false])}>
+                                Select token
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+                            </button>
                         </div>
                         <div>
                             <label className="text-colors-black2 text-sm font-medium">Token 2</label>
-                            <select className="w-full p-2 rounded-lg border border-colors-gray2">
-                                <option disabled selected>Select token</option>
-                                <option value="ETH">ETH</option>
-                                <option value="POU">POU</option>
-                            </select>
+                            <button className="w-full p-2 rounded-lg border border-colors-gray2 bg-white text-left flex items-center justify-between" onClick={() => setShows([false, true])}>
+                                Select token
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+                            </button>
                         </div>
                     </div>
                     <label className="text-colors-black2 font-medium">Deposit amount</label>
