@@ -18,6 +18,14 @@ func (d *DatabasePostgres) UpdateToken(token models.Token) error {
 	return nil
 }
 
+func (d *DatabasePostgres) DeleteToken(token string) error {
+	result := d.Db.Delete(&models.Token{}, token)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
 func (d *DatabasePostgres) GetAllTokens() ([]models.Token, error) {
 	var tokens []models.Token
 	result := d.Db.Find(&tokens)
