@@ -22,7 +22,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
 
     event NewPoolCreated(address poolAddress);
 
-    constructor() Ownable(msg.sender){
+    constructor(address owner) Ownable(owner){
         fee = 10; // 0.1%
     }
 

@@ -10,6 +10,7 @@ contract PouPools is ReentrancyGuard {
     ERC20 tokenA;
     ERC20 tokenB;
     uint public k; // Constant used to calculate the price (tokenA * tokenB = k)
+    bool public closed;
     IPouFactory factory;
 
     struct Liq {
@@ -24,14 +25,19 @@ contract PouPools is ReentrancyGuard {
         factory = IPouFactory(_factory);
     }
 
-    function initPool(uint256 _amountA, uint256 _amountB) external {
+    modifier isNotClosed(){
+        require(!closed, "Pool is closed");
+        _;
+    }
+
+    function initPool(uint256 _amountA, uint256 _amountB) external nonReentrant isNotClosed {
         require(k == 0, "Pool already initialized");
         k = _amountA * _amountB;
         tokenA.transferFrom(msg.sender, address(this), _amountA);
         tokenB.transferFrom(msg.sender, address(this), _amountB);
     }
 
-    function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant { // Pour calculer en front combien envoyé de B il faut faire : B = k / A
+    function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant isNotClosed() { // Pour calculer en front combien envoyé de B il faut faire : B = k / A
         require(tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
         require(tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
         require(_amountA * _amountB == k, "The ratio is bad");
@@ -51,7 +57,7 @@ contract PouPools is ReentrancyGuard {
         tokenB.transfer(msg.sender, _amountB);
     }
 
-    function swapAforB(uint256 _amountA) external nonReentrant {
+    function swapAforB(uint256 _amountA) external nonReentrant isNotClosed {
         require(tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
         uint256 _amountB = getExactTokenB(_amountA);
         uint256 fees = factory.getFees();
@@ -60,7 +66,7 @@ contract PouPools is ReentrancyGuard {
         tokenB.transfer(msg.sender, _amountB * (100 - fees) / 100); // On envoie 100% - fees%
     }
 
-    function swapBforA(uint256 _amountB) external nonReentrant {
+    function swapBforA(uint256 _amountB) external nonReentrant isNotClosed {
         require(tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
         uint256 _amountA = getExactTokenA(_amountB);
         uint256 fees = factory.getFees();
