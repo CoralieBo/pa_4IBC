@@ -1,0 +1,6 @@
+2024/05/24 14:21:05.396452 main.go:18: [Info] Starting server...
+2024/05/24 14:21:10.576616 main.go:18: [Info] Starting server...
+2024/05/24 14:21:10.576891 db.go:23: [Info] Connecting to database with : host=localhost user=postgres password=admin dbname=pouswap port=5432 sslmode=disable TimeZone=Asia/Shanghai
+2024/05/24 14:21:10.629851 db.go:34: [Info] Database connected successfully
+2024/05/24 14:21:10.629904 db.go:36: [Info] running migrations
+2024/05/24 14:21:10.806160 main.go:55: [Info] Server started on port 3001
