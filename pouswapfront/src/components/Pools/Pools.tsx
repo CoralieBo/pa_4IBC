@@ -21,7 +21,10 @@ const Pools = () => {
     return (
         <div className="w-full min-h-screen pt-24">
             <div className="w-full max-w-5xl mx-auto">
-                <h1 className="text-2xl font-bold p-4 text-colors-green1">All pools</h1>
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold p-4 text-colors-green1">All pools</h1>
+                    <Link to={"/Create"} className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">+ New position</Link>
+                </div>
                 <table className="w-full bg-white shadow-lg rounded-lg">
                     <thead>
                         <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
