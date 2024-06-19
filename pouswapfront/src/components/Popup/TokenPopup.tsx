@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { TokenInterface } from "../interfaces/Tokens";
-import Token from "../services/Assets";
+import { TokenInterface } from "../../interfaces/Tokens";
+import Token from "../../services/Assets";
 
 interface TokenPopupProps {
-    setToken: (token: string) => void;
+    setToken: (token: TokenInterface) => void;
     close: () => void;
 }
 
@@ -41,7 +41,11 @@ const TokenPopup = ({ setToken, close }: TokenPopupProps) => {
                                 <img src={`https://ipfs.io/ipfs/${token.logo}`} alt={token.name} className="w-8 h-8 rounded-full" />
                                 <p className="ml-2">{token.name}</p>
                             </div>
-                            <button onClick={() => setToken(token.symbole)} className="text-colors-green1/80 group-hover:text-colors-green1">Select</button>
+                            <button onClick={() => {
+                                setToken(token);
+                                close();
+                            }}
+                                className="text-colors-green1/80 group-hover:text-colors-green1">Select</button>
                         </div>
                     ))}
                 </div>

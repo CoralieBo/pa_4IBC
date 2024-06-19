@@ -1,0 +1,235 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "contract ERC20",
+				"name": "_tokenA",
+				"type": "address"
+			},
+			{
+				"internalType": "contract ERC20",
+				"name": "_tokenB",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_factory",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "ReentrancyGuardReentrantCall",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountA",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amountB",
+				"type": "uint256"
+			}
+		],
+		"name": "addLiquidity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountB",
+				"type": "uint256"
+			}
+		],
+		"name": "getExactTokenA",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountA",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountA",
+				"type": "uint256"
+			}
+		],
+		"name": "getExactTokenB",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountB",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getRateAforB",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getRateBforA",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getSupplyA",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getSupplyB",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountA",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amountB",
+				"type": "uint256"
+			}
+		],
+		"name": "initPool",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "k",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "liquidityProvider",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "amountA",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountB",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountA",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amountB",
+				"type": "uint256"
+			}
+		],
+		"name": "removeLiquidity",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountA",
+				"type": "uint256"
+			}
+		],
+		"name": "swapAforB",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountB",
+				"type": "uint256"
+			}
+		],
+		"name": "swapBforA",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]

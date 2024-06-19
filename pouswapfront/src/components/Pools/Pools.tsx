@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "./Pools.scss";
 import { PoolInterface } from "../../interfaces/Pools";
 import { Link } from "react-router-dom";
-import { GetAllPools } from "../../services/Pools";
+import { PoolsService } from "../../services/Pools";
 import money from "../../utils/asset/images/money.png";
 
 const Pools = () => {
@@ -11,7 +11,7 @@ const Pools = () => {
 
     useEffect(() => {
         const fetchPools = async () => {
-            const pools = await GetAllPools();
+            const pools = await new PoolsService().getAll();
             setPools(pools);
         };
 
