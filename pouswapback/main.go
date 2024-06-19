@@ -50,6 +50,7 @@ func main() {
 		api.Get("/", controllers.GetAllTokens).Name("getAll")
 		api.Post("/add", controllers.AddToken).Name("add")
 		api.Put("/update", controllers.UpdateToken).Name("update")
+		api.Delete("/delete/:token", controllers.DeleteToken).Name("delete")
 	})
 
 	log.Info("Server started on port 3001")

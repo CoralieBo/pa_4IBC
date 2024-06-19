@@ -47,3 +47,12 @@ func GetAllTokens(c *fiber.Ctx) error {
 	}
 	return c.JSON(tokens)
 }
+
+func DeleteToken(c *fiber.Ctx) error {
+	token := c.Params("token")
+	err := db.DB.DeleteToken(token)
+	if err != nil {
+		return c.SendString(err.Error())
+	}
+	return c.SendString("Token deleted successfully")
+}
