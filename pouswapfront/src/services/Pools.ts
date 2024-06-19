@@ -1,7 +1,9 @@
+import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { PoolInterface } from "../interfaces/Pools";
 import { TransactionsInterface } from "../interfaces/Transactions";
+import { BrowserProvider, JsonRpcSigner } from "ethers";
 
-export async function GetAllPools() {
+async function GetAllPools() {
     const transactions : TransactionsInterface[] = [
         {
             id: 1,
@@ -97,7 +99,17 @@ export async function GetAllPools() {
     return pools;
 }
 
-export async function GetPoolById(id: number) {
+async function GetPoolById(id: number) {
     const pools = await GetAllPools();
     return pools.find((pool) => pool.id === id);
+}
+
+export class PoolsService {
+    async getAll() {
+        return await GetAllPools();
+    }
+
+    async getById(id: number) {
+        return await GetPoolById(id);
+    }
 }

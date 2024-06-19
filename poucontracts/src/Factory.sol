@@ -22,7 +22,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
 
     event NewPoolCreated(address poolAddress);
 
-    constructor(address owner) Ownable(owner){
+    constructor() Ownable(msg.sender){
         fee = 10; // 0.1%
     }
 
@@ -31,8 +31,8 @@ contract PouFactory is Ownable, ReentrancyGuard {
         ERC20 _tokenB = ERC20(_addressB);
 
         require(!existPair(_tokenA, _tokenB), "Pool already exist");
-        require(_tokenA.allowance(msg.sender, address(this)) >= _amountA * 10 ** _tokenA.decimals(), "no allowance for tokenA");
-        require(_tokenB.allowance(msg.sender, address(this)) >= _amountB * 10 ** _tokenB.decimals(), "no allowance for tokenB");
+        require(_tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
+        require(_tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
 
         if(!existToken(_tokenA)){
             tokens.push(_tokenA);
@@ -41,8 +41,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
             tokens.push(_tokenB);
         }
         
-        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this));
-        newPool.initPool(_amountA, _amountB);
+        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this), _amountA, _amountB);
         _tokenA.transferFrom(msg.sender, address(newPool), _amountA);
         _tokenB.transferFrom(msg.sender, address(newPool), _amountB);
 

@@ -17,7 +17,7 @@ export default function ConnectButton() {
             const user = await new User().getOneByPublicKey(address);
             if (user) return;
             try {
-                const provider = new BrowserProvider(walletProvider as any)
+                const provider = new BrowserProvider(walletProvider as any);
                 const randomBytes = ethers.hexlify(ethers.randomBytes(16));
                 const now = new Date();
                 const message = `By signing this message, I allow the PouSwap App to save your public key.\n\nNonce: ${randomBytes} - ${now.toISOString()}`;
