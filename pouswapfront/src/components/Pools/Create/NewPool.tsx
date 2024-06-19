@@ -3,8 +3,11 @@ import React, { MouseEventHandler, useContext, useEffect, useState } from "react
 import { useAnimate } from "framer-motion";
 import TokenPopup from "../../Popup/TokenPopup";
 import { TokenInterface } from "../../../interfaces/Tokens";
-import { FactoryCallerContext } from "../../../utils/hooks/FactoryCaller";
+import { FactoryContext } from "../../../utils/hooks/Factory";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { SimpleTokensContext } from "../../../utils/hooks/SimpleTokens";
+import { ethers } from "ethers";
+import Token from "../../../services/Tokens";
 
 const NewPool = () => {
     const [scope, animate] = useAnimate();
@@ -12,11 +15,50 @@ const NewPool = () => {
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
     const [token1, setToken1] = useState<TokenInterface | null>(null);
+    const [amount1, setAmount1] = useState<number>(0);
     const [token2, setToken2] = useState<TokenInterface | null>(null);
+    const [amount2, setAmount2] = useState<number>(0);
     const [shows, setShows] = useState<boolean[]>([false, false]);
 
-    const { isConnected } = useWeb3ModalAccount();
-    const { addLiquidity } = useContext(FactoryCallerContext);
+    const { isConnected, address } = useWeb3ModalAccount();
+    const { getBalance, approve } = useContext(SimpleTokensContext);
+    const [balance1, setBalance1] = useState<string>("0");
+    const [balance2, setBalance2] = useState<string>("0");
+
+    const context = useContext(FactoryContext);
+    const { addLiquidity, getAllPools } = context!;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (token1) {
+                const balanceToken1 = await getBalance(token1?.address!, address!);
+                setBalance1(ethers.formatEther(balanceToken1.toString()));
+            }
+            if (token2) {
+                const balanceToken2 = await getBalance(token2?.address!, address!);
+                setBalance2(ethers.formatEther(balanceToken2.toString()));
+            }
+        }
+        if (isConnected) {
+            fetchData();
+        }
+    }, [token1, token2, isConnected]);
+
+
+    async function addLiq() {
+        if (amount1 === 0 || amount2 === 0) return;
+        let tx = await approve(token1?.address!, ethers.parseEther(amount1.toString()));
+        if (!tx) return;
+        tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()));
+        if (!tx) return;
+        const addLiqTx = await addLiquidity({ token1: token1?.address!, token2: token2?.address!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
+        if (!addLiqTx) return;
+        console.log(addLiqTx);
+        // const pools = await getAllPools();
+        // if (pools.length > 0)
+        //     console.log(pools[0]);
+        // const update = new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools);
+    }
 
     useEffect(() => {
         generateGridCount();
@@ -46,12 +88,6 @@ const NewPool = () => {
         const id = `#${e.target.id}`;
         animate(id, { background: "#B7B78A" }, { duration: 0.15 });
     };
-
-    async function addLiq(token1: string, token2: string, amount1: number, amount2: number) {
-        const tx = await addLiquidity({ token1, token2, amount1, amount2 });
-        console.log(tx);
-    }
-
 
     return (
         <div className="bg-colors-gray1">
@@ -92,11 +128,12 @@ const NewPool = () => {
                     </div>
                     <label className="text-colors-black2 font-medium">Deposit amount</label>
                     <div className='mt-2 bg-colors-white2 border-colors-gray2 border rounded-lg flex items-start justify-between p-4 w-full'>
-                        <div className='flex flex-col items-start w-3/4'>
-                            <input type="number" placeholder="0" className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none' />
-                            {/* {ethPrice &&
-                                <p className="text-white text-xs whitespace-nowrap">${ethToSwap * ethPrice}</p>
-                            } */}
+                        <div>
+                            <input type="number" placeholder="0"
+                                className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none'
+                                onChange={(e) => { setAmount1(parseFloat(e.target.value)) }}
+                                value={amount1}
+                            />
                         </div>
                         <div className='flex flex-col items-end'>
                             <div className='flex items-center justify-around min-w-20 bg-white text-colors-black1 border border-colors-gray2 rounded-2xl pl-1 pr-2 py-0.5'>
@@ -104,19 +141,20 @@ const NewPool = () => {
                                 <p className="font-semibold text-lg">{token1?.symbole}</p>
                             </div>
                             <div className='flex items-center gap-1 mt-2'>
-                                {/* {signer && */}
-                                <p className="text-colors-black2 text-xs whitespace-nowrap">Balance: {1} {token1?.symbole}</p>
-                                {/* } */}
-                                <button className='font-medium text-colors-white2 bg-colors-green1 rounded-xl px-2 py-1 text-xs whitespace-nowrap'>Max</button>
+                                <p className="text-colors-black2 text-xs whitespace-nowrap">Balance: {balance1} {token1?.symbole}</p>
+                                <button
+                                    onClick={() => { setAmount1(parseFloat(balance1)) }}
+                                    className='font-medium text-colors-white2 bg-colors-green1 rounded-xl px-2 py-1 text-xs whitespace-nowrap'
+                                >Max</button>
                             </div>
                         </div>
                     </div>
                     <div className='mt-2 bg-colors-white2 border-colors-gray2 border rounded-lg flex items-start justify-between p-4 w-full'>
-                        <div className='flex flex-col items-start w-3/4'>
-                            <input type="number" placeholder="0" className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none' />
-                            {/* {ethPrice &&
-                                <p className="text-white text-xs whitespace-nowrap">${ethToSwap * ethPrice}</p>
-                            } */}
+                        <div>
+                            <input type="number" placeholder="0" className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none'
+                                onChange={(e) => { setAmount2(parseFloat(e.target.value)) }}
+                                value={amount2}
+                            />
                         </div>
                         <div className='flex flex-col items-end'>
                             <div className='flex items-center justify-around min-w-20 bg-white text-colors-black1 border border-colors-gray2 rounded-2xl pl-1 pr-2 py-0.5'>
@@ -124,17 +162,22 @@ const NewPool = () => {
                                 <p className="font-semibold text-lg">{token2?.symbole}</p>
                             </div>
                             <div className='flex items-center gap-1 mt-2'>
-                                {/* {signer && */}
-                                <p className="text-colors-black2 text-xs whitespace-nowrap">Balance: {77} {token2?.symbole}</p>
-                                {/* } */}
-                                <button className='font-medium text-colors-white2 bg-colors-green1 rounded-xl px-2 py-1 text-xs whitespace-nowrap'>Max</button>
+                                <p className="text-colors-black2 text-xs whitespace-nowrap">Balance: {balance2} {token2?.symbole}</p>
+                                <button
+                                    onClick={() => setAmount2(parseFloat(balance2))}
+                                    className='font-medium text-colors-white2 bg-colors-green1 rounded-xl px-2 py-1 text-xs whitespace-nowrap'
+                                >Max</button>
                             </div>
                         </div>
                     </div>
-                    <p className="text-colors-black1 font-semibold mt-1 ml-2">0</p>
-                    <p className="text-colors-black2 text-sm font-medium ml-2">POU per ETH</p>
+                    <p className="text-colors-black1 font-semibold mt-1 ml-2">
+                        {
+                            isNaN(amount1 / amount2) || amount1 / amount2 === Infinity ? "0" : (amount1 / amount2).toFixed(2)
+                        }
+                    </p>
+                    <p className="text-colors-black2 text-sm font-medium ml-2">{token1?.symbole} per {token2?.symbole}</p>
                     <button
-                        onClick={() => addLiq(token1?.address!, token2?.address!, 1, 1)}
+                        onClick={() => addLiq()}
                         disabled={token1?.address === token2?.address || !token1 || !token2 || !isConnected}
                         className="w-full bg-colors-green1 text-colors-white2 rounded-lg p-2 mt-4">Add liquidity</button>
                 </div>

@@ -19,22 +19,16 @@ contract PouPools is ReentrancyGuard {
     }
     mapping(address => Liq) public liquidityProvider;
 
-    constructor(ERC20 _tokenA, ERC20 _tokenB, address _factory){
+    constructor(ERC20 _tokenA, ERC20 _tokenB, address _factory, uint256 _amountA, uint256 _amountB){
         tokenA = _tokenA;
         tokenB = _tokenB;
         factory = IPouFactory(_factory);
+        k = _amountA * _amountB;
     }
 
     modifier isNotClosed(){
         require(!closed, "Pool is closed");
         _;
-    }
-
-    function initPool(uint256 _amountA, uint256 _amountB) external nonReentrant isNotClosed {
-        require(k == 0, "Pool already initialized");
-        k = _amountA * _amountB;
-        tokenA.transferFrom(msg.sender, address(this), _amountA);
-        tokenB.transferFrom(msg.sender, address(this), _amountB);
     }
 
     function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant isNotClosed() { // Pour calculer en front combien envoyé de B il faut faire : B = k / A

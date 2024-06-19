@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TokenInterface } from "../../interfaces/Tokens";
-import Token from "../../services/Assets";
+import Token from "../../services/Tokens";
 
 interface TokenPopupProps {
     setToken: (token: TokenInterface) => void;
