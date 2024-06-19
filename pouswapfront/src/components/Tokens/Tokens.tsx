@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import shocked from "../../utils/asset/images/shocked.png";
 import coin from "../../utils/asset/images/coin.png";
 import { tokens as tokensLogo } from "../../utils/asset/tokens";
-import Token from "../../services/Assets";
+import Token from "../../services/Tokens";
 import { TokenInterface } from "../../interfaces/Tokens";
 
 const Tokens = () => {

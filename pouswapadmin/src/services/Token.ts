@@ -13,6 +13,11 @@ class Token {
         );
         return response.data;
     }
+
+    delete = async (id: number) => {
+        const response = await axios.delete(`${process.env.REACT_APP_API_URL}/tokens/delete/${id}`);
+        return response.data;
+    }
 }
 
 export default Token;
