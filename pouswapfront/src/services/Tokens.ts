@@ -6,6 +6,11 @@ class Token {
         return response.data;
     }
 
+    getByAddress = async (address: string) => {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tokens/getByAddress/${address}`);
+        return response.data;
+    }
+
     create = async (name: string, symbole: string, address: string, logo: string, price: number) => {
         const response = await axios.post(
             `${process.env.REACT_APP_API_URL}/tokens/add`, 

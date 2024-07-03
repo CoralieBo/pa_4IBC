@@ -74,12 +74,19 @@ contract PouFactory is Ownable, ReentrancyGuard {
         return false;
     }
 
-    function getPairsAddresses() view public returns(address[] memory){
-        return pairsAddresses;
+    function getPairsAddresses() view public returns(address[] memory, InfosPool[] memory){
+        uint pairsLenght = pairsAddresses.length;
+        address[] memory pairsAddressesArray = new address[](pairsLenght);
+        InfosPool[] memory pairsInfos = new InfosPool[](pairsLenght);
+        for (uint i = 0; i < pairsLenght; i++){
+            pairsAddressesArray[i] = pairsAddresses[i];
+            pairsInfos[i] = pools[pairsAddresses[i]];
+        }
+        return (pairsAddressesArray, pairsInfos);
     }
 
-    function getPairsAddress(uint _pairIndex) view public returns(address){
-        return pairsAddresses[_pairIndex];
+    function getPairsAddress(uint _pairIndex) view public returns(address, InfosPool memory){
+        return (pairsAddresses[_pairIndex], pools[pairsAddresses[_pairIndex]]);
     }
 
     function getFees() view external returns(uint256){

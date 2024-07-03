@@ -1,17 +1,33 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./Pools.scss";
 import { PoolInterface } from "../../interfaces/Pools";
 import { Link } from "react-router-dom";
 import PoolService from "../../services/Pools";
+import { FactoryContext } from "../../utils/hooks/Factory";
+import Token from "../../services/Tokens";
 // import money from "../../utils/asset/images/money.png";
 
 const Pools = () => {
     const [pools, setPools] = useState<PoolInterface[]>([]);
 
+    const context = useContext(FactoryContext);
+    const { getAllPools } = context!;
+
     useEffect(() => {
         const fetchPools = async () => {
-            const pools = await new PoolService().getAll();
+            // const pools = await new PoolService().getAll();
+            const datas = await getAllPools();
+            const pools: PoolInterface[] = [];
+            for (let i = 0; i < datas[0].length; i++) {
+                const token1 = await new Token().getByAddress(datas[1][i][0]);
+                const token2 = await new Token().getByAddress(datas[1][i][1]);
+                pools.push({
+                    address: datas[0][i],
+                    token1: token1,
+                    token2: token2
+                });
+            }
             setPools(pools);
         };
 
@@ -30,6 +46,7 @@ const Pools = () => {
                         <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
                             <th className="pl-4 w-8">#</th>
                             <th className="text-start p-4 font-medium">Pool</th>
+                            <th className="text-start p-4 font-medium">Address</th>
                             <th className="text-start p-4 font-medium">TVL</th>
                             <th className="text-start p-4 font-medium">Volume 24H</th>
                             <th className="text-start p-4 font-medium">Volume 7D</th>
@@ -37,10 +54,10 @@ const Pools = () => {
                     </thead>
 
                     <tbody>
-                        {pools.map((pool) => {
+                        {pools.map((pool, index) => {
                             return (
                                 <TableRows
-                                    key={pool.id}
+                                    key={index}
                                     pool={pool}
                                 />
                             );
@@ -63,48 +80,54 @@ const TableRows = ({ pool }: TableRowsProps) => {
 
     return (
         <motion.tr
-            layoutId={`row-${pool.id}`}
+            layoutId={`row-${pool.address}`}
             className="text-sm border-b border-colors-white2 hover:bg-colors-white2"
         >
             <td className="pl-4 w-8 text-colors-black2">
-                {pool.id}
+                {/* {pool.id} */}
             </td>
 
             <td className="p-4 flex items-center gap-3">
                 <div className="grid grid-cols-2">
                     <img
-                        src={pool.logoURL1}
+                        src={`https://ipfs.io/ipfs/${pool.token1.logo}`}
                         alt="pool logo"
                         className="w-6 h-6 rounded-full object-cover object-top shrink-0 -mb-2"
                     />
                     <div />
                     <div />
                     <img
-                        src={pool.logoURL2}
+                        src={`https://ipfs.io/ipfs/${pool.token2.logo}`}
                         alt="pool logo"
                         className="w-6 h-6 rounded-full object-cover object-top shrink-0 -ml-2"
                     />
                 </div>
                 <div>
-                    <Link to={`/Pools/${pool.id}`} className="block mb-1 font-medium hover:underline">{pool.token1} / {pool.token2}</Link>
+                    <Link to={`/Pools/${pool.address}`} className="block mb-1 font-medium hover:underline">{pool.token1.symbole} / {pool.token2.symbole}</Link>
                 </div>
             </td>
 
             <td className="p-4">
                 <span>
-                    ${pool.tvl.toLocaleString("en-US", {})}
+                    {pool.address.slice(0, 5)}...{pool.address.slice(-5)}
                 </span>
             </td>
 
             <td className="p-4">
                 <span>
-                    ${pool.volume24h.toLocaleString("en-US", {})}
+                    {/* ${pool.tvl.toLocaleString("en-US", {})} */}
                 </span>
             </td>
 
             <td className="p-4">
                 <span>
-                    ${pool.volume7d.toLocaleString("en-US", {})}
+                    {/* ${pool.volume24h.toLocaleString("en-US", {})} */}
+                </span>
+            </td>
+
+            <td className="p-4">
+                <span>
+                    {/* ${pool.volume7d.toLocaleString("en-US", {})} */}
                 </span>
             </td>
         </motion.tr>

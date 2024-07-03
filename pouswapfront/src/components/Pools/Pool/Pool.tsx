@@ -20,7 +20,7 @@ const Pool = () => {
 
     return (
         <div className="max-w-7xl mx-auto pt-24">
-            {!pool ? (
+            {/* {!pool ? (
                 <div>Loading...</div>
             ) : (
                 <div>
@@ -138,7 +138,7 @@ const Pool = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

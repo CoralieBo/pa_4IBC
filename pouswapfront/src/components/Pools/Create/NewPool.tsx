@@ -65,7 +65,7 @@ const NewPool = () => {
         if (!addLiqTx) return;
         console.log(addLiqTx);
         // const pools = await getAllPools();
-        // // if (pools.length > 0)
+        // if (pools.length > 0)
         //     console.log(pools);
         // const update = new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools);
     }
