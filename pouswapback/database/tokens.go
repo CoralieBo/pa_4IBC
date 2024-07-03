@@ -34,3 +34,12 @@ func (d *DatabasePostgres) GetAllTokens() ([]models.Token, error) {
 	}
 	return tokens, nil
 }
+
+func (d *DatabasePostgres) GetTokenByAddress(address string) (models.Token, error) {
+	var token models.Token
+	result := d.Db.Where("address = ?", address).First(&token)
+	if result.Error != nil {
+		return token, result.Error
+	}
+	return token, nil
+}
