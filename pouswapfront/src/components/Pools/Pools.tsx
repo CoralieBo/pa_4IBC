@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import "./Pools.scss";
 import { PoolInterface } from "../../interfaces/Pools";
 import { Link } from "react-router-dom";
-import { GetAllPools } from "../../services/Pools";
-import money from "../../utils/asset/images/money.png";
+import PoolService from "../../services/Pools";
+// import money from "../../utils/asset/images/money.png";
 
 const Pools = () => {
     const [pools, setPools] = useState<PoolInterface[]>([]);
 
     useEffect(() => {
         const fetchPools = async () => {
-            const pools = await GetAllPools();
+            const pools = await new PoolService().getAll();
             setPools(pools);
         };
 
@@ -21,7 +21,10 @@ const Pools = () => {
     return (
         <div className="w-full min-h-screen pt-24">
             <div className="w-full max-w-5xl mx-auto">
-                <h1 className="text-2xl font-bold p-4 text-colors-green1">All pools</h1>
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold p-4 text-colors-green1">All pools</h1>
+                    <Link to={"/Create"} className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">+ New position</Link>
+                </div>
                 <table className="w-full bg-white shadow-lg rounded-lg">
                     <thead>
                         <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
@@ -45,9 +48,9 @@ const Pools = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="absolute w-44 rotate-12 top-28 right-44 drop-shadow-lg">
+            {/* <div className="absolute w-44 rotate-12 top-28 right-44 drop-shadow-lg">
                 <img src={money} alt="money.png" />
-            </div>
+            </div> */}
         </div>
     );
 };

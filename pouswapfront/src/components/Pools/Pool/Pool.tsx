@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { PoolInterface } from "../../../interfaces/Pools";
-import { GetPoolById } from "../../../services/Pools";
+import PoolService from "../../../services/Pools";
 import { Link } from "react-router-dom";
 
 const Pool = () => {
@@ -11,7 +11,7 @@ const Pool = () => {
     useEffect(() => {
         const fetchPool = async () => {
             const poolId = window.location.pathname.split("/")[2];
-            const pool = await GetPoolById(parseInt(poolId));
+            const pool = await new PoolService().getById(parseInt(poolId));
             setPool(pool);
         }
 

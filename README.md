@@ -7,10 +7,9 @@ Pouswap is a comprehensive decentralized application (dApp) simulating a decentr
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 [![go version](https://img.shields.io/badge/go-v1.21.1-blue)](https://docs.soliditylang.org/en/v0.8.20/installing-solidity.html) [![nodeJS version](https://img.shields.io/badge/node-v18.17.0-blue)](https://nodejs.org/en/blog/release/v18.17.0) [![npm version](https://img.shields.io/badge/npm-v10.1.0-blue)](https://www.npmjs.com/package/npm/v/10.1.0) [![solidity version](https://img.shields.io/badge/solidity-v0.8.20-blue)](https://docs.soliditylang.org/en/v0.8.20/installing-solidity.html)
-## Authors
+## Author
 
 - [Coralie Boyer (4IBC)](https://github.com/coralieBo/)
-- [Ala (4IBC)](https://github.com/degenanddev/)
 
 ## Demo
 

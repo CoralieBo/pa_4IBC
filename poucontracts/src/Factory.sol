@@ -7,7 +7,6 @@ import "./Pools.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
 import "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
-import "openzeppelin-contracts/contracts/utils/math/Math.sol";
 
 contract PouFactory is Ownable, ReentrancyGuard {
     struct InfosPool {
@@ -32,10 +31,8 @@ contract PouFactory is Ownable, ReentrancyGuard {
         ERC20 _tokenB = ERC20(_addressB);
 
         require(!existPair(_tokenA, _tokenB), "Pool already exist");
-        (, uint256 allowanceA) = Math.tryMul(_amountA, 10 ** _tokenA.decimals());
-        require(_tokenA.allowance(msg.sender, address(this)) >= allowanceA, "no allowance for tokenA");
-        (, uint256 allowanceB) = Math.tryMul(_amountB, 10 ** _tokenB.decimals());
-        require(_tokenB.allowance(msg.sender, address(this)) >= allowanceB, "no allowance for tokenB");
+        require(_tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
+        require(_tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
 
         if(!existToken(_tokenA)){
             tokens.push(_tokenA);
@@ -44,8 +41,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
             tokens.push(_tokenB);
         }
         
-        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this));
-        newPool.initPool(_amountA, _amountB);
+        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this), _amountA, _amountB);
         _tokenA.transferFrom(msg.sender, address(newPool), _amountA);
         _tokenB.transferFrom(msg.sender, address(newPool), _amountB);
 
