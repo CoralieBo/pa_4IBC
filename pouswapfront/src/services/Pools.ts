@@ -1,115 +1,47 @@
-import { useWeb3ModalProvider } from "@web3modal/ethers/react";
-import { PoolInterface } from "../interfaces/Pools";
-import { TransactionsInterface } from "../interfaces/Transactions";
-import { BrowserProvider, JsonRpcSigner } from "ethers";
+import axios from "axios";
 
-async function GetAllPools() {
-    const transactions : TransactionsInterface[] = [
-        {
-            id: 1,
-            tokenIn: "BTC",
-            tokenOut: "ETH",
-            value: 100000,
-            tokenAmountIn: 100,
-            tokenAmountOut: 1000,
-            from: "0x1234567890",
-            timestamp: "2021-08-01 12:00:00"
-        },
-        {
-            id: 2,
-            tokenIn: "ETH",
-            tokenOut: "BTC",
-            value: 100000,
-            tokenAmountIn: 100,
-            tokenAmountOut: 1000,
-            from: "0x1234567890",
-            timestamp: "2021-08-01 12:00:00"
-        },
-        {
-            id: 3,
-            tokenIn: "BTC",
-            tokenOut: "ETH",
-            value: 100000,
-            tokenAmountIn: 100,
-            tokenAmountOut: 1000,
-            from: "0x1234567890",
-            timestamp: "2021-08-01 12:00:00",
-        },
-        {
-            id: 4,
-            tokenIn: "ETH",
-            tokenOut: "BTC",
-            value: 100000,
-            tokenAmountIn: 100,
-            tokenAmountOut: 1000,
-            from: "0x1234567890",
-            timestamp: "2021-08-01 12:00:00",
+class PoolService {
+    getAll = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/pools/`);
+            return response.data;
+        } catch (err) {
+            return [];
         }
-    ];
-    const pools: PoolInterface[] = [
-        {
-            id: 1,
-            token1: "BTC",
-            token2: "ETH",
-            logoURL1: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
-            logoURL2: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-            tvl: 1000000000,
-            volume24h: 100000000,
-            volume7d: 500000000,
-            fees24h: 100000,
-            price1: 50000,
-            price2: 3000,
-            token1Balance: 100000,
-            token2Balance: 1000000,
-            transactions
-        },
-        {
-            id: 2,
-            token1: "BTC",
-            token2: "BNB",
-            logoURL1: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
-            logoURL2: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
-            tvl: 500000000,
-            volume24h: 50000000,
-            volume7d: 250000000,
-            fees24h: 50000,
-            price1: 50000,
-            price2: 500,
-            token1Balance: 100000,
-            token2Balance: 1000000,
-            transactions
-        },
-        {
-            id: 3,
-            token1: "ETH",
-            token2: "BNB",
-            logoURL1: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-            logoURL2: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
-            tvl: 100000000,
-            volume24h: 10000000,
-            volume7d: 50000000,
-            fees24h: 100000,
-            price1: 3000,
-            price2: 500,
-            token1Balance: 100000,
-            token2Balance: 1000000,
-            transactions
-        },
-    ];
-    return pools;
-}
-
-async function GetPoolById(id: number) {
-    const pools = await GetAllPools();
-    return pools.find((pool) => pool.id === id);
-}
-
-export class PoolsService {
-    async getAll() {
-        return await GetAllPools();
     }
 
-    async getById(id: number) {
-        return await GetPoolById(id);
+    getById = async (id: number) => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/pools/${id}`);
+            return response.data;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    create = async (name: string, symbole: string, address: string, logo: string, price: number) => {
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_URL}/pools/add`,
+                { name, symbole, price, logo, address }
+            );
+            return response.data;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    update = async (id: number, name: string, symbole: string, address: string, logo: string, price: number, pools: string[]) => {
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_URL}/pools/update`,
+                { name, symbole, price, logo, address, pools }
+            );
+            return response.data;
+        } catch (err) {
+            return null;
+        }
     }
 }
+
+export default PoolService;

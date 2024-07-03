@@ -44,6 +44,16 @@ const NewPool = () => {
         }
     }, [token1, token2, isConnected]);
 
+    useEffect(() => {
+        async function fetchData() {
+            const pools = await getAllPools();
+            console.log(pools);
+        }
+
+        if (isConnected)
+            fetchData();
+    }, []);
+
 
     async function addLiq() {
         if (amount1 === 0 || amount2 === 0) return;
@@ -55,8 +65,8 @@ const NewPool = () => {
         if (!addLiqTx) return;
         console.log(addLiqTx);
         // const pools = await getAllPools();
-        // if (pools.length > 0)
-        //     console.log(pools[0]);
+        // // if (pools.length > 0)
+        //     console.log(pools);
         // const update = new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools);
     }
 
