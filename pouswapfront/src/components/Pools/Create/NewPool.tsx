@@ -63,11 +63,10 @@ const NewPool = () => {
         if (!tx) return;
         const addLiqTx = await addLiquidity({ token1: token1?.address!, token2: token2?.address!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
         if (!addLiqTx) return;
-        console.log(addLiqTx);
-        // const pools = await getAllPools();
-        // if (pools.length > 0)
-        //     console.log(pools);
-        // const update = new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools);
+        const pools = await getAllPools();
+        const length = pools[0].length - 1;
+        new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools[0][length]);
+        new Token().update(token2?.ID!, token2?.name!, token2?.symbole!, token2?.address!, token2?.logo!, token2?.price!, pools[0][length]);
     }
 
     useEffect(() => {

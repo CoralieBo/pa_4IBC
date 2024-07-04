@@ -50,7 +50,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
         emit NewPoolCreated(address(newPool));
     }
 
-    function existPair(ERC20 _tokenA, ERC20 _tokenB) view internal returns(bool) {
+    function existPair(ERC20 _tokenA, ERC20 _tokenB) view public returns(bool) {
         uint pairsLenght = pairsAddresses.length;
         for (uint i = 0; i < pairsLenght; i++){
             address pairsAddress = pairsAddresses[i];
@@ -107,6 +107,14 @@ contract PouFactory is Ownable, ReentrancyGuard {
     }
 
     function claimTokens(ERC20 _token) external onlyOwner {
+        require(existToken(_token), "Token not exist");
         _token.transfer(msg.sender, _token.balanceOf(address(this)));
+    }
+
+    function claimAll() external onlyOwner {
+        uint tokensLenght = tokens.length;
+        for (uint i = 0; i < tokensLenght; i++){
+            tokens[i].transfer(msg.sender, tokens[i].balanceOf(address(this)));
+        }
     }
 }

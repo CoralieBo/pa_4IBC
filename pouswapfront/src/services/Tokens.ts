@@ -19,7 +19,7 @@ class Token {
         return response.data;
     }
 
-    update = async (id: number, name: string, symbole: string, address: string, logo: string, price: number, pools: string[]) => {
+    update = async (id: number, name: string, symbole: string, address: string, logo: string, price: number, pools: string) => {
         const response = await axios.put(
             `${process.env.REACT_APP_API_URL}/tokens/update`, 
             { name, symbole, price, logo, address, pools }
