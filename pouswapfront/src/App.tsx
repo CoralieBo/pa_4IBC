@@ -1,14 +1,16 @@
 import './styles/app.scss';
 import Header from './components/Header/Header';
 import { Route, Routes } from 'react-router-dom';
-import NotFound from './components/404/404';
+import NotFound from './components/Errors/404';
 import Home from './components/Home/Home';
 import Swap from './components/Swap/Swap';
 import Tokens from './components/Tokens/Tokens';
 import Pools from './components/Pools/Pools';
 import Pool from './components/Pools/Pool/Pool';
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react'
+import { createWeb3Modal, defaultConfig, useWeb3ModalAccount } from '@web3modal/ethers/react'
 import NewPool from './components/Pools/Create/NewPool';
+import ConnectButton from './utils/hooks/connectWallet';
+import Unauthorized from './components/Errors/401';
 
 function App() {
 
@@ -43,18 +45,27 @@ function App() {
     themeMode: 'dark'
   })
 
+  const { isConnected } = useWeb3ModalAccount();
+
   return (
     <div className='min-h-screen bg'>
       <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/swap" element={<Swap />} />
-        <Route path="/tokens" element={<Tokens />} />
-        <Route path="/pools" element={<Pools />} />
-        <Route path="/pools/:id" element={<Pool />} />
-        <Route path="/create" element={<NewPool />} />
-        <Route path='*' element={<NotFound />} />
-      </Routes>
+      {isConnected ?
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/swap" element={<Swap />} />
+          <Route path="/tokens" element={<Tokens />} />
+          <Route path="/pools" element={<Pools />} />
+          <Route path="/pools/:id" element={<Pool />} />
+          <Route path="/create" element={<NewPool />} />
+          <Route path='*' element={<NotFound />} />
+        </Routes>
+        :
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='*' element={<Unauthorized />} />
+        </Routes>
+      }
     </div>
   );
 }
