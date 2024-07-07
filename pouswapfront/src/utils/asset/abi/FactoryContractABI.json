@@ -112,30 +112,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "contract ERC20",
-				"name": "_tokenA",
-				"type": "address"
-			},
-			{
-				"internalType": "contract ERC20",
-				"name": "_tokenB",
-				"type": "address"
-			}
-		],
-		"name": "existPair",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "getFees",
 		"outputs": [
@@ -151,34 +127,22 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "_pairIndex",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "token1",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "token2",
+				"type": "address"
 			}
 		],
-		"name": "getPairsAddress",
+		"name": "getPairAddress",
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
-			},
-			{
-				"components": [
-					{
-						"internalType": "contract ERC20",
-						"name": "tokenA",
-						"type": "address"
-					},
-					{
-						"internalType": "contract ERC20",
-						"name": "tokenB",
-						"type": "address"
-					}
-				],
-				"internalType": "struct PouFactory.InfosPool",
-				"name": "",
-				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",

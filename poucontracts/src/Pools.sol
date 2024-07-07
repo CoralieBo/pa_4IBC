@@ -23,7 +23,7 @@ contract PouPools is ReentrancyGuard {
         tokenA = _tokenA;
         tokenB = _tokenB;
         factory = IPouFactory(_factory);
-        k = _amountA * _amountB;
+        k = _amountA * _amountB / 10 ** 18;
     }
 
     modifier isNotClosed(){
@@ -34,7 +34,9 @@ contract PouPools is ReentrancyGuard {
     function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant isNotClosed() { // Pour calculer en front combien envoyé de B il faut faire : B = k / A
         require(tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
         require(tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
-        require(_amountA * _amountB == k, "The ratio is bad");
+        uint256 current_ratio = getSupplyA() / getSupplyB();
+        uint256 new_ratio = _amountA / _amountB;
+        require(current_ratio == new_ratio, "The ratio is bad");
         tokenA.transferFrom(msg.sender, address(this), _amountA);
         tokenB.transferFrom(msg.sender, address(this), _amountB);
         liquidityProvider[msg.sender].amountA += _amountA;
@@ -44,7 +46,9 @@ contract PouPools is ReentrancyGuard {
     function removeLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant {
         require(liquidityProvider[msg.sender].amountA >= _amountA, "Not enough liquidity for tokenA");
         require(liquidityProvider[msg.sender].amountB >= _amountB, "Not enough liquidity for tokenB");
-        require(_amountA * _amountB == k, "The ratio is bad");
+        uint256 current_ratio = getSupplyA() / getSupplyB();
+        uint256 new_ratio = (getSupplyA() - _amountA) / (getSupplyB() - _amountB);
+        require(current_ratio == new_ratio, "The ratio is bad");
         liquidityProvider[msg.sender].amountA -= _amountA;
         liquidityProvider[msg.sender].amountB -= _amountB;
         tokenA.transfer(msg.sender, _amountA);

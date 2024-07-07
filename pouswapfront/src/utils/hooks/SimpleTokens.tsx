@@ -5,7 +5,7 @@ import tokenContractABI from "../asset/abi/SimpleTokenABI.json";
 
 const SimpleTokensContext = createContext({
     getBalance: async (tokenAddress: string, account: string) => Promise<string>,
-    approve: async (tokenAddress: string, amount: bigint) => Promise<ethers.TransactionResponse>,
+    approve: async (tokenAddress: string, amount: bigint, to: string) => Promise<ethers.TransactionResponse | null>
 });
 
 function SimpleTokenProvider({ children }: { children: React.ReactNode }) {
@@ -23,12 +23,12 @@ function SimpleTokenProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
-    async function approve(tokenAddress: string, amount: bigint) {
+    async function approve(tokenAddress: string, amount: bigint, to: string) {
         const provider = new BrowserProvider(walletProvider as any);
         const signer = await provider.getSigner();
         const tokenContract = new ethers.Contract(tokenAddress, tokenContractABI, signer);
         try {
-            const tx = await tokenContract.approve(process.env.REACT_APP_FACTORY_ADDRESS!, amount);
+            const tx = await tokenContract.approve(to, amount);
             await tx.wait();
             return tx;
         } catch (error) {

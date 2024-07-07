@@ -8,12 +8,14 @@ import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { SimpleTokensContext } from "../../../utils/hooks/SimpleTokens";
 import { ethers } from "ethers";
 import Token from "../../../services/Tokens";
+import { useLocation } from "react-router-dom";
 
 const NewPool = () => {
     const [scope, animate] = useAnimate();
 
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
+    const [pairAddress, setPairAddress] = useState<string | null>(null);
     const [token1, setToken1] = useState<TokenInterface | null>(null);
     const [amount1, setAmount1] = useState<number>(0);
     const [token2, setToken2] = useState<TokenInterface | null>(null);
@@ -26,7 +28,27 @@ const NewPool = () => {
     const [balance2, setBalance2] = useState<string>("0");
 
     const context = useContext(FactoryContext);
-    const { addLiquidity, getAllPools } = context!;
+    const { createPool, addLiquidity, getAllPools, getPairAddress, bToDeposite } = context!;
+
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+    useEffect(() => {
+        async function fetchData() {
+            if (searchParams.get("tokenA")) {
+                const tokenA = await new Token().getByAddress(searchParams.get("tokenA")!);
+                setToken1(tokenA);
+            }
+            if (searchParams.get("tokenB")) {
+                const tokenB = await new Token().getByAddress(searchParams.get("tokenB")!);
+                setToken2(tokenB);
+            }
+        }
+
+        fetchData();
+    }, []);
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,35 +60,44 @@ const NewPool = () => {
                 const balanceToken2 = await getBalance(token2?.address!, address!);
                 setBalance2(ethers.formatEther(balanceToken2.toString()));
             }
+            if (token1 && token2) {
+                const pairAddress = await getPairAddress(token1?.address!, token2?.address!);
+                setPairAddress(pairAddress);
+            }
         }
         if (isConnected) {
             fetchData();
         }
     }, [token1, token2, isConnected]);
 
-    useEffect(() => {
-        async function fetchData() {
-            const pools = await getAllPools();
-            console.log(pools);
+    async function calculateAmoutB(amountA: number) {
+        if (pairAddress) {
+            const amountB = await bToDeposite(amountA, pairAddress);
+            setAmount2(amountB);
         }
+    }
 
-        if (isConnected)
-            fetchData();
-    }, []);
-
-
-    async function addLiq() {
+    async function addPool() {
         if (amount1 === 0 || amount2 === 0) return;
-        let tx = await approve(token1?.address!, ethers.parseEther(amount1.toString()));
+        let tx = await approve(token1?.address!, ethers.parseEther(amount1.toString()), process.env.REACT_APP_FACTORY_ADDRESS!);
         if (!tx) return;
-        tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()));
+        tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()), process.env.REACT_APP_FACTORY_ADDRESS!);
         if (!tx) return;
-        const addLiqTx = await addLiquidity({ token1: token1?.address!, token2: token2?.address!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
-        if (!addLiqTx) return;
+        const poolTx = await createPool({ token1: token1?.address!, token2: token2?.address!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
+        if (!poolTx) return;
         const pools = await getAllPools();
         const length = pools[0].length - 1;
         new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools[0][length]);
         new Token().update(token2?.ID!, token2?.name!, token2?.symbole!, token2?.address!, token2?.logo!, token2?.price!, pools[0][length]);
+    }
+
+    async function addLiq() {
+        if (amount1 === 0 || amount2 === 0) return;
+        let tx = await approve(token1?.address!, ethers.parseEther(amount1.toString()), pairAddress!);
+        if (!tx) return;
+        tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()), pairAddress!);
+        if (!tx) return;
+        await addLiquidity({ poolAddress: pairAddress!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
     }
 
     useEffect(() => {
@@ -140,7 +171,12 @@ const NewPool = () => {
                         <div>
                             <input type="number" placeholder="0"
                                 className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none'
-                                onChange={(e) => { setAmount1(parseFloat(e.target.value)) }}
+                                onChange={(e) => {
+                                    if (pairAddress && !isNaN(parseFloat(e.target.value))) {
+                                        calculateAmoutB(parseFloat(e.target.value));
+                                    }
+                                    setAmount1(parseFloat(e.target.value))
+                                }}
                                 value={amount1}
                             />
                         </div>
@@ -160,8 +196,10 @@ const NewPool = () => {
                     </div>
                     <div className='mt-2 bg-colors-white2 border-colors-gray2 border rounded-lg flex items-start justify-between p-4 w-full'>
                         <div>
-                            <input type="number" placeholder="0" className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none'
-                                onChange={(e) => { setAmount2(parseFloat(e.target.value)) }}
+                            <input disabled={pairAddress !== null} type="number" placeholder="0" className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none'
+                                onChange={(e) => {
+                                    setAmount2(parseFloat(e.target.value))
+                                }}
                                 value={amount2}
                             />
                         </div>
@@ -186,9 +224,16 @@ const NewPool = () => {
                     </p>
                     <p className="text-colors-black2 text-sm font-medium ml-2">{token1?.symbole} per {token2?.symbole}</p>
                     <button
-                        onClick={() => addLiq()}
+                        onClick={pairAddress ? addLiq : addPool}
                         disabled={token1?.address === token2?.address || !token1 || !token2 || !isConnected}
-                        className="w-full bg-colors-green1 text-colors-white2 rounded-lg p-2 mt-4">Add liquidity</button>
+                        className="w-full bg-colors-green1 text-colors-white2 rounded-lg p-2 mt-4">
+                        {
+                            pairAddress ?
+                                "Add liquidity"
+                                :
+                                "Create pool"
+                        }
+                    </button>
                 </div>
             </div>
         </div >

@@ -12,20 +12,23 @@ const Pools = () => {
     const [pools, setPools] = useState<PoolInterface[]>([]);
 
     const context = useContext(FactoryContext);
-    const { getAllPools } = context!;
+    const { getAllPools, getSupplyA, getSupplyB } = context!;
 
     useEffect(() => {
         const fetchPools = async () => {
-            // const pools = await new PoolService().getAll();
             const datas = await getAllPools();
             const pools: PoolInterface[] = [];
             for (let i = 0; i < datas[0].length; i++) {
                 const token1 = await new Token().getByAddress(datas[1][i][0]);
                 const token2 = await new Token().getByAddress(datas[1][i][1]);
+                const supply1 = await getSupplyA(datas[0][i]);
+                const supply2 = await getSupplyB(datas[0][i]);
                 pools.push({
                     address: datas[0][i],
                     token1: token1,
-                    token2: token2
+                    token2: token2,
+                    supply1: supply1,
+                    supply2: supply2
                 });
             }
             setPools(pools);
@@ -47,9 +50,9 @@ const Pools = () => {
                             <th className="pl-4 w-8">#</th>
                             <th className="text-start p-4 font-medium">Pool</th>
                             <th className="text-start p-4 font-medium">Address</th>
-                            <th className="text-start p-4 font-medium">TVL</th>
-                            <th className="text-start p-4 font-medium">Volume 24H</th>
-                            <th className="text-start p-4 font-medium">Volume 7D</th>
+                            <th className="text-start p-4 font-medium">Supply_A</th>
+                            <th className="text-start p-4 font-medium">Supply_B</th>
+                            <th className="text-start p-4 font-medium"></th>
                         </tr>
                     </thead>
 
@@ -115,20 +118,21 @@ const TableRows = ({ pool }: TableRowsProps) => {
 
             <td className="p-4">
                 <span>
-                    {/* ${pool.tvl.toLocaleString("en-US", {})} */}
+                    {pool.supply1} {pool.token1.symbole.toUpperCase()}
                 </span>
             </td>
 
             <td className="p-4">
                 <span>
-                    {/* ${pool.volume24h.toLocaleString("en-US", {})} */}
+                    {pool.supply2} {pool.token2.symbole.toUpperCase()}
                 </span>
             </td>
 
-            <td className="p-4">
-                <span>
-                    {/* ${pool.volume7d.toLocaleString("en-US", {})} */}
-                </span>
+            <td className="text-center">
+                <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`} 
+                className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
+                    Add liq
+                </Link>
             </td>
         </motion.tr>
     );
