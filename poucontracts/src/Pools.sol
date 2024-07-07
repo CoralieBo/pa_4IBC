@@ -96,4 +96,13 @@ contract PouPools is ReentrancyGuard {
     function getSupplyB() view public returns(uint256) {
         return tokenB.balanceOf(address(this));
     }
+
+    function getStatus() view external returns(bool) {
+        return closed;
+    }
+
+    function closePool() external {
+        require(msg.sender == factory.owner(), "Only the owner can close the pool");
+        closed = true;
+    }
 }
