@@ -6,4 +6,6 @@ interface IPouFactory {
     
     function getFees() view external returns(uint256);
 
+    function owner() external view returns (address);
+
 }

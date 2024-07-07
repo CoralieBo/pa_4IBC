@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import shocked from "../../utils/asset/images/shocked.png";
 import coin from "../../utils/asset/images/coin.png";
 import { tokens as tokensLogo } from "../../utils/asset/tokens";
-import Token from "../../services/Assets";
+import Token from "../../services/Tokens";
 import { TokenInterface } from "../../interfaces/Tokens";
 
 const Tokens = () => {
@@ -32,6 +32,7 @@ const Tokens = () => {
               <th className="text-start p-4 font-medium">Address</th>
               <th className="text-start p-4 font-medium">Price</th>
               <th className="text-start p-4 font-medium">Volume</th>
+              <th className="text-start p-4 font-medium">Trades</th>
             </tr>
           </thead>
           <tbody>
@@ -117,6 +118,11 @@ const TableRows = ({ token }: TableRowsProps) => {
       <td className="p-4">
         <span>
           {/* ${token.volume.toLocaleString("en-US", {})} */}
+        </span>
+      </td>
+
+      <td className="p-4">
+        <span>
         </span>
       </td>
     </motion.tr>

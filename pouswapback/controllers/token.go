@@ -48,6 +48,15 @@ func GetAllTokens(c *fiber.Ctx) error {
 	return c.JSON(tokens)
 }
 
+func GetByAddress(c *fiber.Ctx) error {
+	address := c.Params("address")
+	token, err := db.DB.GetTokenByAddress(address)
+	if err != nil {
+		return c.SendString(err.Error())
+	}
+	return c.JSON(token)
+}
+
 func DeleteToken(c *fiber.Ctx) error {
 	token := c.Params("token")
 	err := db.DB.DeleteToken(token)
