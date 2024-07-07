@@ -106,7 +106,11 @@ const TableRows = ({ pool }: TableRowsProps) => {
                     />
                 </div>
                 <div>
-                    <Link to={`/Pools/${pool.address}`} className="block mb-1 font-medium hover:underline">{pool.token1.symbole} / {pool.token2.symbole}</Link>
+                    {/* <Link to={`/Pools/${pool.address}`} className="block mb-1 font-medium hover:underline"> */}
+                    <p className="mb-1 font-medium">
+                        {pool.token1.symbole} / {pool.token2.symbole}
+                    </p>
+                    {/* </Link> */}
                 </div>
             </td>
 
@@ -129,8 +133,8 @@ const TableRows = ({ pool }: TableRowsProps) => {
             </td>
 
             <td className="text-center">
-                <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`} 
-                className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
+                <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`}
+                    className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
                     Add liq
                 </Link>
             </td>
