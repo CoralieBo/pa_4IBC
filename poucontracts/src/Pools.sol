@@ -152,7 +152,7 @@ contract PouPools is ReentrancyGuard {
     }
 
     function closePool() external {
-        require(msg.sender == factory.owner(), "Only owner can close the pool");
+        require(msg.sender == address(factory), "Only the factory can close the pool");
         closed = true;
     }
 }

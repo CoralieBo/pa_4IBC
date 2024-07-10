@@ -130,4 +130,18 @@ contract PouFactory is Ownable, ReentrancyGuard {
             tokens[i].transfer(msg.sender, tokens[i].balanceOf(address(this)));
         }
     }
+
+    function closePool(address _pairAddress) external onlyOwner {
+        require(pools[_pairAddress].tokenA != ERC20(address(0)), "Pool not exist");
+        PouPools pool = PouPools(_pairAddress);
+        pool.closePool();
+        uint pairsLenght = pairsAddresses.length;
+        for (uint i = 0; i < pairsLenght; i++){
+            if(pairsAddresses[i] == _pairAddress){
+                pairsAddresses[i] = pairsAddresses[pairsLenght - 1];
+                pairsAddresses.pop();
+                break;
+            }
+        }
+    }
 }
