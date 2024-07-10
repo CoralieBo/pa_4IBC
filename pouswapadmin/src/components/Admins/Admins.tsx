@@ -6,19 +6,20 @@ import { cropAddress } from "../../asset/utils/cropAddress";
 import StackedNotifications from "../Notifications/Notifications";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { SafeContext } from "../../asset/hooks/safe";
+import { Link } from "react-router-dom";
 
 const Admins = () => {
     const [admins, setAdmins] = useState<IUser[] | null>(null);
     const [userSelected, setUserSelected] = useState<IUser | null>(null);
     const [actionActive, setActionActive] = useState<boolean>(false);
     const [notification, setNotification] = useState<boolean>(false);
-    const { accountAddress } = useContext(SafeContext);
+    const { accountAddress, removeAdmin } = useContext(SafeContext);
     const { address } = useWeb3ModalAccount();
 
     async function fetchDatas() {
         try {
             const admins: IUser[] = await new User().getAll();
-            setAdmins(admins.filter((user) => user.role === "admin"));
+            setAdmins(admins.filter((user) => user.role === "admin" || user.role === "pendingForUser"));
         } catch (e) {
             console.error(e);
         }
@@ -36,7 +37,8 @@ const Admins = () => {
         if (!actionActive || !userSelected) {
             return;
         }
-        await new User().update({ ...userSelected, role: "user" });
+        await removeAdmin({ ownerAddress: userSelected.public_key });
+        await new User().update({ ...userSelected, role: "pendingForUser" });
         setNotification(true);
         fetchDatas();
     }
@@ -50,7 +52,7 @@ const Admins = () => {
 
     return (
         <section className="mx-auto max-w-7xl px-4 py-8 text-colors-black1">
-            <Title Text="Users" />
+            <Title Text="Admins" />
             <div className="w-full flex justify-between items-center px-8">
                 <p>Safe address : {cropAddress(accountAddress!)}</p>
                 <div className="relative w-full max-w-xs">
@@ -103,9 +105,15 @@ const Admins = () => {
                                             </td>
 
                                             <td className="px-4 py-4 space-x-2 text-sm text-right whitespace-nowrap">
-                                                <button disabled={user.public_key == address} onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
-                                                    Downgrade to User
-                                                </button>
+                                                {user.role === "pendingForUser" ?
+                                                    <Link to={"/Pending"} className="px-2 py-1.5 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                        Upgrade requested
+                                                    </Link>
+                                                    :
+                                                    <button disabled={user.public_key == address} onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                        Downgrade to User
+                                                    </button>
+                                                }
                                             </td>
                                         </tr>
                                     ))}

@@ -80,7 +80,7 @@ const Tokens = () => {
 
     return (
         <section className="mx-auto max-w-7xl px-4 py-8 text-colors-black1">
-            <Title Text="tokens" />
+            <Title Text="Tokens" />
             <div className="w-full flex justify-end px-8">
                 <div className="relative w-full max-w-xs">
                     <input type="text" placeholder="Search" className="w-full px-3 py-3 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
