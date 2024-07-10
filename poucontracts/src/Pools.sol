@@ -120,10 +120,10 @@ contract PouPools is ReentrancyGuard {
 
     function getExactToken(uint256 _amountFrom, address _tokenFrom) view public returns(uint256 _amountA) {
         if(_tokenFrom == address(tokenA)){
-            return getSupplyB() - k / (getSupplyA() + _amountFrom);
+            return getSupplyB() * _amountFrom / getSupplyA();
         }
         if(_tokenFrom == address(tokenB)){
-            return getSupplyA() - k / (getSupplyB() + _amountFrom);
+            return getSupplyA() * _amountFrom / getSupplyB();
         }
     }
 

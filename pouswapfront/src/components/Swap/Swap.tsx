@@ -19,7 +19,7 @@ const Swap = () => {
     const { address } = useWeb3ModalAccount();
     const { getBalance, approve } = useContext(SimpleTokensContext);
     const context = useContext(FactoryContext);
-    const { getPairAddress, swapFrom } = context!;
+    const { getPairAddress, swapFrom, getExactToken } = context!;
 
     const [pairAddress, setPairAddress] = useState<string | null>(null);
     const [token1, setToken1] = useState<TokenInterface | null>(null);
@@ -153,11 +153,14 @@ const Swap = () => {
                         <div className='mt-2 bg-colors-gray2 rounded-lg flex items-start justify-between p-4 w-full h-24'>
                             <div className='flex flex-col items-start w-3/4'>
                                 <input type="number" placeholder="0" value={amount1}
-                                    onChange={(e) => {
+                                    onChange={async (e) => {
                                         setAmount1(parseFloat(e.target.value));
-                                        // TODO
-                                    }
-                                    }
+                                        if (!pairAddress || isNaN(parseFloat(e.target.value))) return;
+                                        const amount = await getExactToken(pairAddress, ethers.parseEther(e.target.value), token1?.address!);
+                                        if (amount) {
+                                            setAmount2(parseFloat(amount.toFixed(2)));
+                                        }
+                                    }}
                                     className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none' />
                                 {/* {ethPrice &&
                                 <p className="text-white text-xs whitespace-nowrap">${ethToSwap * ethPrice}</p>
@@ -171,7 +174,14 @@ const Swap = () => {
                                 </button>
                                 <div className='flex mt-1'>
                                     <p className="text-white text-xs whitespace-nowrap pr-1">Balance: {balance1} {token1?.symbole}</p>
-                                    <button onClick={() => setAmount1(parseFloat(balance1))}
+                                    <button onClick={async () => {
+                                        setAmount1(parseFloat(balance1))
+                                        if (!pairAddress || isNaN(parseFloat(balance1))) return;
+                                        const amount = await getExactToken(pairAddress, ethers.parseEther(balance1), token1?.address!);
+                                        if (amount) {
+                                            setAmount2(parseFloat(amount.toFixed(2)));
+                                        }
+                                    }}
                                         className='font-bold text-colors-orange text-xs whitespace-nowrap'>Max</button>
                                 </div>
                             </div>
@@ -179,7 +189,14 @@ const Swap = () => {
                         <div className='mt-2 bg-colors-gray2 rounded-lg flex items-start justify-between p-4 w-full h-24'>
                             <div className='flex flex-col items-start w-3/4'>
                                 <input type="number" placeholder="0" value={amount2}
-                                    onChange={(e) => setAmount2(parseFloat(e.target.value))}
+                                    onChange={async (e) => {
+                                        setAmount2(parseFloat(e.target.value))
+                                        if (!pairAddress || isNaN(parseFloat(e.target.value))) return;
+                                        const amount = await getExactToken(pairAddress, ethers.parseEther(e.target.value), token2?.address!);
+                                        if (amount) {
+                                            setAmount1(parseFloat(amount.toFixed(2)));
+                                        }
+                                    }}
                                     className='bg-transparent w-full focus:outline-none focus:ring-0 text-colors-black2 text-4xl appearance-none' />
                             </div>
                             <div className='flex flex-col items-end'>
@@ -191,7 +208,14 @@ const Swap = () => {
                                 <div className='flex mt-1'>
                                     <p className="text-white text-xs whitespace-nowrap pr-1">Balance: {balance2} {token2?.symbole}</p>
                                     <button
-                                        onClick={() => setAmount2(parseFloat(balance2))}
+                                        onClick={async () => {
+                                            setAmount2(parseFloat(balance2))
+                                            if (!pairAddress || isNaN(parseFloat(balance2))) return;
+                                            const amount = await getExactToken(pairAddress, ethers.parseEther(balance2), token2?.address!);
+                                            if (amount) {
+                                                setAmount1(parseFloat(amount.toFixed(2)));
+                                            }
+                                        }}
                                         className='font-bold text-colors-orange text-xs whitespace-nowrap'>Max</button>
                                 </div>
                             </div>
