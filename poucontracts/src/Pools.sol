@@ -22,14 +22,17 @@ contract PouPools is ReentrancyGuard {
     mapping(address => Provider) public liquidityProvider;
     address[] public liquidityProviders;
 
-    uint256 totalFeesA;
-    uint256 totalFeesB;
+    uint256 public totalFeesA;
+    uint256 public totalFeesB;
 
     constructor(ERC20 _tokenA, ERC20 _tokenB, address _factory, uint256 _amountA, uint256 _amountB){
         tokenA = _tokenA;
         tokenB = _tokenB;
         factory = IPouFactory(_factory);
         k = _amountA * _amountB / 10 ** 18;
+        liquidityProvider[tx.origin].amountA += _amountA;
+        liquidityProvider[tx.origin].amountB += _amountB;
+        liquidityProviders.push(tx.origin);
     }
 
     modifier isNotClosed(){
@@ -70,6 +73,7 @@ contract PouPools is ReentrancyGuard {
         ERC20 tokenFrom = ERC20(_tokenFrom);
         ERC20 tokenTo = tokenFrom == tokenA ? tokenB : tokenA;
         require(tokenFrom.allowance(msg.sender, address(this)) >= _amountFrom, "no allowance for token");
+        require(tokenFrom.balanceOf(msg.sender) >= _amountFrom, "Not enough balance");
         uint256 _amountTo = getExactToken(_amountFrom, _tokenFrom);
 
         uint256 fees = factory.getFees();
