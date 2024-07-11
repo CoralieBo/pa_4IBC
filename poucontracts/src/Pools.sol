@@ -62,7 +62,7 @@ contract PouPools is ReentrancyGuard {
         uint256 current_ratio = getSupplyA() / getSupplyB();
         uint256 new_ratio = (getSupplyA() - _amountA) / (getSupplyB() - _amountB);
         require(current_ratio == new_ratio, "The ratio is bad");
-        // k -= _amountA * _amountB / 10 ** 18; // TODO: Check if it's correct
+        k -= _amountA * _amountB / 10 ** 18; // TODO: Check if it's correct
         liquidityProvider[msg.sender].amountA -= _amountA;
         liquidityProvider[msg.sender].amountB -= _amountB;
         tokenA.transfer(msg.sender, _amountA);

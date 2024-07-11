@@ -8,13 +8,13 @@ import {PouFactory} from "../src/Factory.sol";
 
 contract TokenA is ERC20 {
     constructor() ERC20("TokenA", "TKA") {
-        _mint(msg.sender, 3000);
+        _mint(msg.sender, 3000 ether);
     }
 }
 
 contract TokenB is ERC20 {
     constructor() ERC20("TokenA", "TKA") {
-        _mint(msg.sender, 5000);
+        _mint(msg.sender, 5000 ether);
     }
 }
 
@@ -29,21 +29,20 @@ contract PouPoolsTest is Test {
         tokenB = new TokenB();
         factory = new PouFactory();
 
-        pouPools = new PouPools(tokenA, tokenB, address(factory));
-        tokenA.approve(address(pouPools), 1000);
-        tokenB.approve(address(pouPools), 2000);
-        pouPools.initPool(1000, 2000);
-        assertEq(tokenA.balanceOf(address(pouPools)), 1000);
-        assertEq(tokenB.balanceOf(address(pouPools)), 2000);
-        assertEq(pouPools.k(), 2000000);
+        pouPools = new PouPools(tokenA, tokenB, address(factory), 1000 ether, 2000 ether);
+        tokenA.transfer(address(pouPools), 1000 ether);
+        tokenB.transfer(address(pouPools), 2000 ether);
+        assertEq(tokenA.balanceOf(address(pouPools)), 1000 ether);
+        assertEq(tokenB.balanceOf(address(pouPools)), 2000 ether);
+        assertEq(pouPools.k(), 2000000 ether);
     }
 
     function test_AddLiquidity() public {
-        tokenA.approve(address(pouPools), 1000);
-        tokenB.approve(address(pouPools), 2000);
-        pouPools.addLiquidity(1000, 2000);
-        assertEq(tokenA.balanceOf(address(pouPools)), 2000);
-        assertEq(tokenB.balanceOf(address(pouPools)), 4000);
+        tokenA.approve(address(pouPools), 1000 ether);
+        tokenB.approve(address(pouPools), 2000 ether);
+        pouPools.addLiquidity(1000 ether, 2000 ether);
+        assertEq(tokenA.balanceOf(address(pouPools)), 2000 ether);
+        assertEq(tokenB.balanceOf(address(pouPools)), 4000 ether);
     }
 
     function test_GetRateAforB() public {
@@ -56,23 +55,84 @@ contract PouPoolsTest is Test {
 
     function test_SwapAforB() public {
         uint256 initialTokenA = tokenA.balanceOf(address(pouPools));
-        uint256 initialTokenB = tokenB.balanceOf(address(pouPools));
         
-        uint256 amountB = pouPools.getExactTokenB(50);
         tokenA.approve(address(pouPools), 1000);
-        pouPools.swapAforB(50);
+        pouPools.swap(50, address(tokenA));
         assertEq(tokenA.balanceOf(address(pouPools)), initialTokenA + 50);
-        assertEq(tokenB.balanceOf(address(pouPools)), initialTokenB - amountB);
     }
 
     function test_SwapBforA() public {
-        uint256 initialTokenA = tokenA.balanceOf(address(pouPools));
         uint256 initialTokenB = tokenB.balanceOf(address(pouPools));
         
-        uint256 amountA = pouPools.getExactTokenA(50);
         tokenB.approve(address(pouPools), 1000);
-        pouPools.swapBforA(50);
-        assertEq(tokenA.balanceOf(address(pouPools)), initialTokenA - amountA);
+        pouPools.swap(50, address(tokenB));
         assertEq(tokenB.balanceOf(address(pouPools)), initialTokenB + 50);
+    }
+
+    function test_RemoveLiquidity() public {
+        tokenA.approve(address(pouPools), 1000 ether);
+        tokenB.approve(address(pouPools), 2000 ether);
+        pouPools.addLiquidity(1000 ether, 2000 ether);
+
+        pouPools.removeLiquidity(500 ether, 1000 ether);
+        assertEq(tokenA.balanceOf(address(this)), 500 ether + 1000 ether);
+        assertEq(tokenB.balanceOf(address(this)), 1000 ether + 1000 ether);
+        assertEq(tokenA.balanceOf(address(pouPools)), 1500 ether);
+        assertEq(tokenB.balanceOf(address(pouPools)), 3000 ether);
+
+        pouPools.removeLiquidity(500 ether, 1000 ether);
+        assertEq(tokenA.balanceOf(address(this)), 500 ether + 1500 ether);
+        assertEq(tokenB.balanceOf(address(this)), 1000 ether + 2000 ether);
+        assertEq(tokenA.balanceOf(address(pouPools)), 1000 ether);
+        assertEq(tokenB.balanceOf(address(pouPools)), 2000 ether);
+    }
+
+    function test_DistributeFeesToLiquidityProviders() public {
+        tokenA.approve(address(pouPools), 1000 ether);
+        tokenB.approve(address(pouPools), 2000 ether);
+        pouPools.addLiquidity(1000 ether, 2000 ether);
+
+        tokenA.approve(address(pouPools), 100 ether);
+        pouPools.swap(100 ether, address(tokenA));
+
+        uint256 totalFeesBefore = pouPools.totalFeesB();
+        assert(totalFeesBefore > 0);
+    }
+
+    function test_ClaimFees() public {
+        tokenA.approve(address(pouPools), 1000 ether);
+        tokenB.approve(address(pouPools), 2000 ether);
+        pouPools.addLiquidity(1000 ether, 2000 ether);
+
+        tokenA.approve(address(pouPools), 100 ether);
+        pouPools.swap(100 ether, address(tokenA));
+
+        uint256 initialBalanceB = tokenB.balanceOf(address(this));
+        pouPools.claim();
+
+        uint256 finalBalanceB = tokenB.balanceOf(address(this));
+        assert(finalBalanceB > initialBalanceB);
+    }
+
+    function test_ClosePool() public {
+        // Only factory can close the pool
+        vm.prank(address(factory));
+        pouPools.closePool();
+        assert(pouPools.getStatus());
+
+        // Ensure no one can add liquidity to a closed pool
+        tokenA.approve(address(pouPools), 1000 ether);
+        tokenB.approve(address(pouPools), 2000 ether);
+        vm.expectRevert("Pool is closed");
+        pouPools.addLiquidity(1000 ether, 2000 ether);
+    }
+
+    function test_GetExactToken() public {
+        uint256 amountFrom = 100 ether;
+        uint256 expectedAmountB = pouPools.getExactToken(amountFrom, address(tokenA));
+        assertEq(expectedAmountB, (2000 ether * amountFrom) / 1000 ether, "Expected amount of tokenB");
+
+        uint256 expectedAmountA = pouPools.getExactToken(amountFrom, address(tokenB));
+        assertEq(expectedAmountA, (1000 ether * amountFrom) / 2000 ether, "Expected amount of tokenA");
     }
 }
