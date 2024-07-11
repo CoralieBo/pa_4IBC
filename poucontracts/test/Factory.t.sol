@@ -55,7 +55,7 @@ contract PouFactoryTest is Test {
         tokenB.approve(address(factory), 2000 ether);
         factory.createPool(address(tokenA), address(tokenB), 1000 ether, 2000 ether);
 
-        (uint256[] memory amounts, ERC20[] memory tokens) = factory.getTokensAmountToClaim();
+        (uint256[] memory amounts,) = factory.getTokensAmountToClaim();
         assertEq(amounts.length, 2);
         assertEq(amounts[0], 0);
         assertEq(amounts[1], 0);
