@@ -9,7 +9,7 @@ import { sign } from 'crypto';
 const SafeContext = createContext({
     accountAddress: null as string | null,
     addAdmin: async (params: { ownerAddress: string }) => { },
-    removeAdmin: async (params: { ownerAddress: string }) => { },
+    removeAdmin: async (params: { ownerAddress: string }): Promise<boolean> => false,
     getPendingTransactions: async () => [] as SafeMultisigTransactionResponse[] | undefined,
     executeTransaction: async (safeTxHash: string) => undefined as ContractTransactionReceipt | null | undefined
 });
@@ -44,11 +44,12 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
-    async function removeAdmin({ ownerAddress }: { ownerAddress: string }) {
-        if (!protocolKit || !apiKit) return
+    async function removeAdmin({ ownerAddress }: { ownerAddress: string }): Promise<boolean> {
+        if (!protocolKit || !apiKit) return false;
         try {
             const params: RemoveOwnerTxParams = {
-                ownerAddress
+                ownerAddress,
+                threshold: 2
             }
             const safeTransaction = await protocolKit.createRemoveOwnerTx(params)
             const safeTxHash = await protocolKit.getTransactionHash(safeTransaction)
@@ -60,8 +61,10 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
                 senderAddress: address!,
                 senderSignature: senderSignature.data,
             });
+            return true;
         } catch (e) {
             console.error(e);
+            return false;
         }
     }
 

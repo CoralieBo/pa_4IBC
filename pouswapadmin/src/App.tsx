@@ -11,6 +11,7 @@ import { AdminContext } from './asset/hooks/isAdmin';
 import PendingTx from './components/PendingTx/PendingTx';
 import Tokens from './components/Tokens/Tokens';
 import Stats from './components/Stats/Stats';
+import Transactions from './components/Transactions/Transactions';
 
 // 1. Get projectId
 const projectId = 'c4c9fb94605ef75f7878b0f8f7452e7d'
@@ -68,6 +69,7 @@ function App() {
             <Route path="/tokens" element={<Tokens />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/admins" element={<Admins />} />
+            <Route path="/transactions" element={<Transactions />} />
             <Route path="/pending" element={<PendingTx />} />
           </Routes>
         </div>

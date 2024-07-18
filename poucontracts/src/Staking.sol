@@ -8,94 +8,65 @@ import "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
 contract PouStaking is Ownable, ReentrancyGuard {
 
-    ERC20 public token;
+    uint256 public dailyRewardRate = 0.0001 * 10 ** 18; // 0.01% per day
 
-    uint256 public rewardRate; // Reward tokens per block
-    uint256 public lastUpdateBlock;
-    uint256 public rewardPerTokenStored;
+    struct Stake {
+        uint256 amount;
+        uint256 reward;
+        uint256 lastUpdateTime;
+    }
 
-    mapping(address => uint256) public userRewardPerTokenPaid;
-    mapping(address => uint256) public rewards;
-
-    uint256 private _totalSupply;
-    mapping(address => uint256) private _balances;
+    uint256 public totalSupply;
+    mapping(address => Stake) public stakes;
 
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
     event RewardPaid(address indexed user, uint256 reward);
 
-    constructor(ERC20 _token, uint256 _rewardRate) Ownable(msg.sender) {
-        token = _token;
-        rewardRate = _rewardRate;
-        lastUpdateBlock = block.number;
-    }
+    constructor() Ownable(msg.sender) { }
 
     modifier updateReward(address account) {
-        rewardPerTokenStored = rewardPerToken();
-        lastUpdateBlock = block.number;
-
-        if (account != address(0)) {
-            rewards[account] = earned(account);
-            userRewardPerTokenPaid[account] = rewardPerTokenStored;
-        }
+        stakes[account].reward = earned(account);
+        stakes[account].lastUpdateTime = block.timestamp;
         _;
     }
 
-    function stake(uint256 amount) external nonReentrant updateReward(msg.sender) {
-        require(amount > 0, "Cannot stake 0");
-        _totalSupply += amount;
-        _balances[msg.sender] += amount;
-        token.transferFrom(msg.sender, address(this), amount);
-        emit Staked(msg.sender, amount);
+    function stake() external updateReward(msg.sender) payable {
+        require(msg.value > 0, "Cannot stake 0");
+        stakes[msg.sender].amount += msg.value;
+        totalSupply += msg.value;
+        emit Staked(msg.sender, msg.value);
     }
 
-    function withdraw(uint256 amount) public nonReentrant updateReward(msg.sender) {
-        require(amount > 0, "Cannot withdraw 0");
-        _totalSupply -= amount;
-        _balances[msg.sender] -= amount;
-        token.transfer(msg.sender, amount);
+    function unstake(uint256 amount) external updateReward(msg.sender) nonReentrant {
+        require(amount > 0, "Cannot unstake 0");
+        require(stakes[msg.sender].amount >= amount, "Insufficient balance");
+        stakes[msg.sender].amount -= amount;
+        totalSupply -= amount;
+        payable(msg.sender).transfer(amount);
         emit Withdrawn(msg.sender, amount);
     }
 
-    function exit() external {
-        withdraw(_balances[msg.sender]);
-        getReward();
+    function claim() external updateReward(msg.sender) nonReentrant {
+        uint256 reward = stakes[msg.sender].reward;
+        require(reward > 0, "No reward");
+        stakes[msg.sender].reward = 0;
+        payable(msg.sender).transfer(reward);
+        emit RewardPaid(msg.sender, reward);
     }
 
-    function getReward() public nonReentrant updateReward(msg.sender) {
-        uint256 reward = rewards[msg.sender];
-        if (reward > 0) {
-            rewards[msg.sender] = 0;
-            token.transfer(msg.sender, reward);
-            emit RewardPaid(msg.sender, reward);
-        }
-    }
-
-    function rewardPerToken() public view returns (uint256) {
-        if (_totalSupply == 0) {
-            return rewardPerTokenStored;
-        }
-        return
-            rewardPerTokenStored +
-            ((rewardRate * (block.number - lastUpdateBlock) * 1e18) / _totalSupply);
-    }
-
-    function earned(address account) public view returns (uint256) {
-        return
-            ((_balances[account] * (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) +
-            rewards[account];
-    }
-
-    function setRewardRate(uint256 _rewardRate) external onlyOwner {
-        rewardRate = _rewardRate;
-    }
-
-    function totalSupply() external view returns (uint256) {
-        return _totalSupply;
+    function setDailyRewardRate(uint256 _dailyRewardRate) external onlyOwner {
+        dailyRewardRate = _dailyRewardRate;
     }
 
     function balanceOf(address account) external view returns (uint256) {
-        return _balances[account];
+        return stakes[account].amount;
     }
 
+    function earned(address account) public view returns (uint256) {
+        uint256 stakedTime = block.timestamp - stakes[account].lastUpdateTime;
+        uint256 dailyRate = dailyRewardRate;
+        uint256 reward = stakes[account].reward;
+        return ((stakes[account].amount * stakedTime * dailyRate / 1e18) / 86400) + reward;
+    }
 }

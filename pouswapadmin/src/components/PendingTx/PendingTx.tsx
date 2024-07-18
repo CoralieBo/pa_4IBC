@@ -52,7 +52,7 @@ const PendingTx = () => {
             <div className="flex flex-col mt-6">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <h2 className="text-lg font-semibold text-gray-800 ml-4">Add owner</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 ml-4">Set admins</h2>
                         <div className="overflow-hidden border border-gray-200 md:rounded-lg">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
@@ -97,7 +97,7 @@ const PendingTx = () => {
                                             </td>
                                             <td className="px-12 py-4 text-sm font-medium whitespace-nowrap text-center">
                                                 <h4 className="text-gray-700">
-                                                    {cropAddress((tx.dataDecoded as any).parameters[0].value)}
+                                                    {cropAddress((tx.dataDecoded as any)?.parameters[0].value)}
                                                 </h4>
                                             </td>
                                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">

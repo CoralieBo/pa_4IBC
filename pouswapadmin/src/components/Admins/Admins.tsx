@@ -37,10 +37,12 @@ const Admins = () => {
         if (!actionActive || !userSelected) {
             return;
         }
-        await removeAdmin({ ownerAddress: userSelected.public_key });
-        await new User().update({ ...userSelected, role: "pendingForUser" });
-        setNotification(true);
-        fetchDatas();
+        const result = await removeAdmin({ ownerAddress: userSelected.public_key });
+        if (result) {
+            await new User().update({ ...userSelected, role: "pendingForUser" });
+            setNotification(true);
+            fetchDatas();
+        }
     }
 
     useEffect(() => {

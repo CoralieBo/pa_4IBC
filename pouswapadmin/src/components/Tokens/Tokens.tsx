@@ -6,7 +6,7 @@ import { IToken } from "../../interfaces/Tokens";
 import Token from "../../services/Token";
 import { pinFileToIPFS } from "../../asset/utils/files";
 import StackedNotifications from "../Notifications/Notifications";
-import { deploy } from "../../asset/utils/SimpleERC20/deployContract";
+import { deploy } from "../../asset/utils/abi/SimpleERC20/deployContract";
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 
 const Tokens = () => {
