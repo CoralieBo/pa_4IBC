@@ -54,7 +54,7 @@ contract PouStaking is Ownable, ReentrancyGuard {
         payable(msg.sender).transfer(reward);
         emit RewardPaid(msg.sender, reward);
     }
-
+    
     function setDailyRewardRate(uint256 _dailyRewardRate) external onlyOwner {
         dailyRewardRate = _dailyRewardRate;
     }

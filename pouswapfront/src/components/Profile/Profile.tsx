@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { animate, useInView } from "framer-motion";
 import { MotionProps, motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
@@ -6,8 +6,51 @@ import { FiArrowRight, FiMail, FiMapPin } from "react-icons/fi";
 import { SiGithub, SiTiktok, SiTwitter, SiYoutube } from "react-icons/si";
 import money from "../../utils/asset/images/money.png";
 import coin from "../../utils/asset/images/coin.png";
+import Modal from "./Modal";
+import { StakingContext } from "../../utils/hooks/Staking";
+
+enum Options {
+    Hiden,
+    Stake,
+    Unstake,
+}
 
 export const Profile = () => {
+
+    const [option, setOption] = useState<Options>(Options.Hiden);
+    const [rewards, setRewards] = useState<number>(0);
+    const [balance, setBalance] = useState<number>(0);
+    const [supply, setSupply] = useState<number>(0);
+    const [dailyRewards, setDailyRewards] = useState<number>(0);
+
+
+    const context = useContext(StakingContext);
+    const { claim, earned, balanceOf, totalSupply, dailyRewardRate } = context!;
+
+    useEffect(() => {
+        async function fetchDatas() {
+            let value = await earned();
+            console.log("rewards :", value);
+            if (value) {
+                setRewards(parseFloat(value));
+            }
+            value = await balanceOf();
+            if (value) {
+                setBalance(parseFloat(value));
+            }
+            value = await totalSupply();
+            if (value) {
+                setSupply(parseFloat(value));
+            }
+            value = await dailyRewardRate();
+            if (value) {
+                setDailyRewards(parseFloat(value));
+            }
+        }
+
+        fetchDatas();
+    }, [earned]);
+
     return (
         <div className="min-h-screen px-4 flex items-center pt-12">
             {/* <Logo /> */}
@@ -32,7 +75,7 @@ export const Profile = () => {
                         </span>
                     </h1>
                     <p className="flex items-center gap-1 text-colors-green1 hover:underline">
-                        0.1% of tokens staked are distributed every day
+                        {dailyRewards}% of tokens staked are distributed every day
                     </p>
                 </Block>
                 <Block
@@ -40,13 +83,13 @@ export const Profile = () => {
                 >
                     <img src={money} alt="money" className="w-[70%] object-contain mx-auto" />
                     <div className="flex gap-5 justify-center mt-5">
-                        <button className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+                        <button onClick={() => setOption(Options.Stake)} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
                             Stake :D
                         </button>
-                        <button className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+                        <button onClick={claim} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
                             Claim !
                         </button>
-                        <button className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+                        <button onClick={() => setOption(Options.Unstake)} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
                             Unstake :(
                         </button>
                     </div>
@@ -55,26 +98,28 @@ export const Profile = () => {
                     <div className="mx-auto max-w-3xl px-4">
                         <div className="flex flex-col items-center justify-center sm:flex-row">
                             <Stat
-                                num={15.5}
-                                decimals={1}
-                                suffix="POU"
-                                subheading="Staked in the pool"
-                            />
-                            <Stat
-                                num={12}
-                                suffix="Days"
-                                subheading="Time staked"
-                            />
-                            <Stat
-                                num={2}
+                                num={supply}
                                 decimals={2}
-                                suffix="POU"
-                                subheading="Total rewards earned"
+                                suffix="ETH"
+                                subheading="Total supply"
+                            />
+                            <Stat
+                                num={balance}
+                                decimals={2}
+                                suffix="ETH"
+                                subheading="Your staked balance"
+                            />
+                            <Stat
+                                num={rewards}
+                                decimals={2}
+                                suffix="ETH"
+                                subheading="Your rewards"
                             />
                         </div>
                     </div>
                 </Block>
             </motion.div>
+            <Modal option={option} setOption={setOption} />
         </div >
     );
 };
@@ -127,14 +172,18 @@ const Stat = ({ num, suffix, decimals = 0, subheading }: Props) => {
     useEffect(() => {
         if (!isInView) return;
 
-        animate(0, num, {
-            duration: 1,
-            onUpdate(value) {
-                if (!ref.current) return;
+        if (num < 0.01 && num > 0) {
+            ref.current!.textContent = "<0.01";
+        } else {
+            animate(0, num, {
+                duration: 1,
+                onUpdate(value) {
+                    if (!ref.current) return;
 
-                ref.current.textContent = value.toFixed(decimals);
-            },
-        });
+                    ref.current.textContent = value.toFixed(decimals);
+                },
+            });
+        }
     }, [num, decimals, isInView]);
 
     return (
