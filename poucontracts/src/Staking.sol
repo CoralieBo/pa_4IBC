@@ -17,7 +17,9 @@ contract PouStaking is Ownable, ReentrancyGuard {
     }
 
     uint256 public totalSupply;
+    uint256 public totalClaimed;
     mapping(address => Stake) public stakes;
+    address[] stakers;
 
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
@@ -35,6 +37,9 @@ contract PouStaking is Ownable, ReentrancyGuard {
         require(msg.value > 0, "Cannot stake 0");
         stakes[msg.sender].amount += msg.value;
         totalSupply += msg.value;
+        if(stakes[msg.sender].amount == msg.value) {
+            stakers.push(msg.sender);
+        }
         emit Staked(msg.sender, msg.value);
     }
 
@@ -51,12 +56,17 @@ contract PouStaking is Ownable, ReentrancyGuard {
         uint256 reward = stakes[msg.sender].reward;
         require(reward > 0, "No reward");
         stakes[msg.sender].reward = 0;
+        totalClaimed += reward;
         payable(msg.sender).transfer(reward);
         emit RewardPaid(msg.sender, reward);
     }
     
     function setDailyRewardRate(uint256 _dailyRewardRate) external onlyOwner {
         dailyRewardRate = _dailyRewardRate;
+    }
+
+    function getAllStakers() external view returns(address[] memory){
+        return stakers;
     }
 
     function balanceOf(address account) external view returns (uint256) {

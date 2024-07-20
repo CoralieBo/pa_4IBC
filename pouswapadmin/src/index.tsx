@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { AdminContextProvider } from './asset/hooks/isAdmin';
 import { SafeContextProvider } from './asset/hooks/safe';
+import { BlockchainProvider } from './asset/hooks/blockchain';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -13,11 +14,13 @@ const root = ReactDOM.createRoot(
 root.render(
   <AdminContextProvider>
     <SafeContextProvider>
-      <BrowserRouter>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </BrowserRouter>
+      <BlockchainProvider>
+        <BrowserRouter>
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </BrowserRouter>
+      </BlockchainProvider>
     </SafeContextProvider>
   </AdminContextProvider>
 );
