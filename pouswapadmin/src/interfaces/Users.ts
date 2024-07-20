@@ -3,5 +3,6 @@ export interface IUser {
     public_key: string,
     signature: string,
     role: string,
-    status: string
+    status: string,
+    swap: number
 }

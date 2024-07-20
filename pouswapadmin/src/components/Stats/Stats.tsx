@@ -15,6 +15,7 @@ const Stats = () => {
     const [stakers, setStakers] = useState<string[]>([]);
     const [claimed, setClaimed] = useState<number[]>([0, 0, 0, 0, 0]);
     const [staked, setStaked] = useState<number[]>([0, 0, 0, 0, 0]);
+    const [swap, setSwap] = useState<number[]>([0, 0, 0, 0, 0]);
 
     const context = useContext(BlockchainContext);
     const { getClaimed, getStaked, getStakers } = context!;
@@ -31,6 +32,8 @@ const Stats = () => {
             setStaked([12, 9, 14, 11, parseFloat(staked)]);
             const claimed = await getClaimed();
             setClaimed([7, 5, 8, 6, parseFloat(claimed)]);
+            const swap = users.reduce((acc: number, user: IUser) => acc + user.swap, 0);
+            setSwap([23, 16, 20, 21, swap]);
         }
 
         fetchDatas();
@@ -56,11 +59,11 @@ const Stats = () => {
     } satisfies ChartConfig
 
     const swapsData = [
-        { month: "March", transactions: 23 },
-        { month: "April", transactions: 16 },
-        { month: "May", transactions: 20 },
-        { month: "June", transactions: 21 },
-        { month: "July", transactions: 14 },
+        { month: "March", transactions: swap[0] },
+        { month: "April", transactions: swap[1] },
+        { month: "May", transactions: swap[2] },
+        { month: "June", transactions: swap[3] },
+        { month: "July", transactions: swap[4] },
     ]
 
     const swapsConfig = {
