@@ -10,6 +10,7 @@ import { SimpleTokensContext } from "../../utils/hooks/SimpleTokens";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { ethers } from "ethers";
 import { FactoryContext } from "../../utils/hooks/Factory";
+import User from "../../services/User";
 
 const Swap = () => {
     const [scope, animate] = useAnimate();
@@ -45,7 +46,6 @@ const Swap = () => {
                 const tokenB = await new Token().getByAddress(searchParams.get("tokenB")!);
                 setToken2(tokenB);
                 const balanceB = await getBalance(token2?.address!, address!);
-                console.log(balanceB.toString());
 
                 setBalance2(ethers.formatEther(balanceB.toString()));
             }
@@ -67,7 +67,6 @@ const Swap = () => {
         async function fetchData() {
             if (token1 && token2) {
                 const pair = await getPairAddress(token1.address, token2.address);
-                console.log(pair);
                 setPairAddress(pair);
             }
         }
@@ -80,8 +79,10 @@ const Swap = () => {
         const tx = await approve(token1.address, ethers.parseEther(amount1.toString()), pairAddress!);
         if (!tx) return;
         const swap = await swapFrom({ pairAddress: pairAddress!, amount: ethers.parseEther(amount1.toString()), tokenAddress: token1.address });
-        console.log(swap);
-
+        if (swap) {
+            const user = await new User().getOneByPublicKey(address!);
+            await new User().update(user.public_key, user.signature, user.swap+1, user.role, user.status);
+        }
     }
 
     useEffect(() => {

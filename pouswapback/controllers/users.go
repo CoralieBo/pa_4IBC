@@ -17,7 +17,7 @@ func AddUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&userReq); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
 	}
-	user := models.User{PublicKey: userReq.PublicKey, Signature: userReq.Signature, Role: "user", Status: "active"}
+	user := models.User{PublicKey: userReq.PublicKey, Signature: userReq.Signature, Role: "user", Status: "active", Swap: 0}
 	err := db.DB.CreateUser(user)
 	if err != nil {
 		return c.SendString(err.Error())
