@@ -7,6 +7,7 @@ import { IUser } from "../../interfaces/Users";
 import { useContext, useEffect, useState } from "react";
 import User from "../../services/User";
 import { BlockchainContext } from "../../asset/hooks/blockchain";
+import StatssService from "../../services/Stats";
 
 const Stats = () => {
 
@@ -16,6 +17,8 @@ const Stats = () => {
     const [claimed, setClaimed] = useState<number[]>([0, 0, 0, 0, 0]);
     const [staked, setStaked] = useState<number[]>([0, 0, 0, 0, 0]);
     const [swap, setSwap] = useState<number[]>([0, 0, 0, 0, 0]);
+
+    const [topCrypto, setTopCrypto] = useState<any[]>([]);
 
     const context = useContext(BlockchainContext);
     const { getClaimed, getStaked, getStakers } = context!;
@@ -34,6 +37,10 @@ const Stats = () => {
             setClaimed([7, 5, 8, 6, parseFloat(claimed)]);
             const swap = users.reduce((acc: number, user: IUser) => acc + user.swap, 0);
             setSwap([23, 16, 20, 21, swap]);
+            const crypto = await new StatssService().getCryptoStats();
+            console.log(crypto);
+
+            setTopCrypto(crypto);
         }
 
         fetchDatas();
@@ -129,6 +136,51 @@ const Stats = () => {
                     </Block>
                 </div>
             </div>
+            <h2 className="text-2xl font-semibold mt-8">Top crypto</h2>
+            <table className="min-w-full rounded-lg bg-colors-gray2 p-6 overflow-hidden mt-3">
+                <thead>
+                    <tr>
+                        <th scope="col" className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
+                            Rank
+                        </th>
+                        <th scope="col" className="py-3.5 px-4 text-sm font-normal text-gray-500">
+                            Symbol
+                        </th>
+
+                        <th scope="col" className="px-12 py-3.5 text-sm font-normal text-gray-500 text-center">
+                            Name
+                        </th>
+
+                        <th scope="col" className="px-4 py-3.5 text-sm font-normal text-gray-500 text-center">
+                            Price
+                        </th>
+                        <th scope="col" className="px-4 py-3.5 text-sm font-normal text-gray-500 text-center">
+                            Volume 24h
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="bg-colors-white2 divide-y divide-gray-200">
+                    {topCrypto.map((crypto, index) => (
+                        <tr key={index}>
+                            <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
+                                # {index + 1}
+                            </td>
+                            <td className="px-4 py-4 text-sm font-medium whitespace-nowrap text-center">
+                                {crypto.CoinInfo.Name}
+                            </td>
+                            <td className="px-12 py-4 text-sm font-medium whitespace-nowrap text-center">
+                                {crypto.CoinInfo.FullName}
+                            </td>
+                            <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
+                                {crypto.DISPLAY.USD.PRICE}
+                            </td>
+                            <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
+                                {crypto.DISPLAY.USD.VOLUME24HOUR}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </section>
     )
 }
