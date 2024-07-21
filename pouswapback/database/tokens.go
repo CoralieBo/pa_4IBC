@@ -35,6 +35,7 @@ func (d *DatabasePostgres) UpdateToken(token models.Token) error {
 	existingToken.Price = token.Price
 	existingToken.Logo = token.Logo
 	existingToken.Address = token.Address
+	existingToken.Trades = token.Trades
 	SetPools(&existingToken, GetPools(&token))
 	result = d.Db.Save(&existingToken)
 	if result.Error != nil {

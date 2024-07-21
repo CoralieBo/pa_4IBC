@@ -13,16 +13,16 @@ class Token {
 
     create = async (name: string, symbole: string, address: string, logo: string, price: number) => {
         const response = await axios.post(
-            `${process.env.REACT_APP_API_URL}/tokens/add`, 
-            { name, symbole, price, logo, address }
+            `${process.env.REACT_APP_API_URL}/tokens/add`,
+            { name, symbole, price, logo, address, trades: 0 }
         );
         return response.data;
     }
 
-    update = async (id: number, name: string, symbole: string, address: string, logo: string, price: number, pools: string) => {
+    update = async (id: number, name: string, symbole: string, address: string, logo: string, price: number, pools: string, trades: number) => {
         const response = await axios.put(
-            `${process.env.REACT_APP_API_URL}/tokens/update`, 
-            { name, symbole, price, logo, address, pools }
+            `${process.env.REACT_APP_API_URL}/tokens/update`,
+            { name, symbole, price, logo, address, pools, trades }
         );
         return response.data;
     }

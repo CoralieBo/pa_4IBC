@@ -87,8 +87,8 @@ const NewPool = () => {
         if (!poolTx) return;
         const pools = await getAllPools();
         const length = pools[0].length - 1;
-        new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools[0][length]);
-        new Token().update(token2?.ID!, token2?.name!, token2?.symbole!, token2?.address!, token2?.logo!, token2?.price!, pools[0][length]);
+        new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools[0][length], token1?.trades!);
+        new Token().update(token2?.ID!, token2?.name!, token2?.symbole!, token2?.address!, token2?.logo!, token2?.price!, pools[0][length], token2?.trades!);
     }
 
     async function addLiq() {

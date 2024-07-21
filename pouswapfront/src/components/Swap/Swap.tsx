@@ -82,6 +82,8 @@ const Swap = () => {
         if (swap) {
             const user = await new User().getOneByPublicKey(address!);
             await new User().update(user.public_key, user.signature, user.swap+1, user.role, user.status);
+            await new Token().update(token1.ID, token1.name, token1.symbole, token1.address, token1.logo, token1.price, token1.pools, token1?.trades!+1);
+            await new Token().update(token2.ID, token2.name, token2.symbole, token2.address, token2.logo, token2.price, token2.pools, token2?.trades!+1);
         }
     }
 
