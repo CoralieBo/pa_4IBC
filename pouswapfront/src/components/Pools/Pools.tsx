@@ -44,8 +44,8 @@ const Pools = () => {
                     <h1 className="text-2xl font-bold p-4 text-colors-green1">All pools</h1>
                     <Link to={"/Create"} className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">+ New position</Link>
                 </div>
-                <table className="w-full bg-white shadow-lg rounded-lg">
-                    <thead>
+                <table className="w-full bg-colors-white2 overflow-hidden shadow-lg rounded-lg">
+                    <thead className="bg-colors-gray2">
                         <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
                             <th className="pl-4 w-8">#</th>
                             <th className="text-start p-4 font-medium">Pool</th>
@@ -59,10 +59,38 @@ const Pools = () => {
                     <tbody>
                         {pools.map((pool, index) => {
                             return (
-                                <TableRows
-                                    key={index}
-                                    pool={pool}
-                                />
+                                <>
+                                    <TableRows
+                                        key={index}
+                                        pool={pool}
+                                    />
+                                    <motion.tr
+                                        layoutId={`row-${pool.address}`}
+                                        className="text-sm bg-colors-gray1 hidden relative "
+                                        id={`details${pool.address}`}>
+                                        <td></td>
+                                        <td className="font-medium text-center absolute left-48 py-4">
+                                            Rewards: <br />
+                                            <span className="font-normal">0.01 tst1 / 0.032 tst2</span>
+                                        </td>
+                                        <td className="text-center py-4">
+                                            <button className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
+                                                Claim
+                                            </button>
+                                        </td>
+                                        <td className="font-medium text-center absolute right-72 py-4">
+                                            Liquidity : <br />
+                                            <span className="font-normal">0.01 tst1 / 0.032 tst2</span>
+                                        </td>
+                                        <td className="text-center py-4">
+                                            <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`}
+                                                className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
+                                                Add liq
+                                            </Link>
+                                        </td>
+                                        <td></td>
+                                    </motion.tr>
+                                </>
                             );
                         })}
                     </tbody>
@@ -83,8 +111,16 @@ const TableRows = ({ pool }: TableRowsProps) => {
 
     return (
         <motion.tr
-            layoutId={`row-${pool.address}`}
-            className="text-sm border-b border-colors-white2 hover:bg-colors-white2"
+            id={`row-${pool.address}`}
+            className="text-sm cursor-pointer hover:bg-colors-gray1"
+            onClick={() => {
+                const details = document.getElementById(`details${pool.address}`);
+                if (details) details.classList.toggle("hidden");
+                const row = document.getElementById(`row-${pool.address}`);
+                if (row) row.classList.toggle("bg-colors-gray1");
+                const action = document.getElementById(`action${pool.address}`);
+                if (action) action.classList.toggle("rotate-180");
+            }}
         >
             <td className="pl-4 w-8 text-colors-black2">
                 {/* {pool.id} */}
@@ -122,21 +158,18 @@ const TableRows = ({ pool }: TableRowsProps) => {
 
             <td className="p-4">
                 <span>
-                    {pool.supply1} {pool.token1.symbole.toUpperCase()}
+                    {pool.supply1?.toFixed(2)} {pool.token1.symbole.toUpperCase()}
                 </span>
             </td>
 
             <td className="p-4">
                 <span>
-                    {pool.supply2} {pool.token2.symbole.toUpperCase()}
+                    {pool.supply2?.toFixed(2)} {pool.token2.symbole.toUpperCase()}
                 </span>
             </td>
 
             <td className="text-center">
-                <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`}
-                    className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
-                    Add liq
-                </Link>
+                <svg className="mx-5" id={`action${pool.address}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5" /></svg>
             </td>
         </motion.tr>
     );
