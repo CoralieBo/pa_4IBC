@@ -8,7 +8,7 @@ enum Options {
     Unstake,
 }
 
-const Modal = ({ option, setOption }: { option: Options, setOption: (option: Options) => void }) => {
+const Modal = ({ option, setOption, setLoading }: { option: Options, setOption: (option: Options) => void, setLoading: (loading: boolean) => void }) => {
     if (option === Options.Hiden) {
         return null;
     }
@@ -18,17 +18,17 @@ const Modal = ({ option, setOption }: { option: Options, setOption: (option: Opt
 
     async function submit() {
         const value = (document.getElementById("value") as HTMLInputElement).value;
+        setLoading(true);
+        let tx;
         if (option === Options.Stake) {
-            const tx = await stake({ value: ethers.parseEther(value) });
-            if (tx) {
-                setOption(Options.Hiden);
-            }
+            tx = await stake({ value: ethers.parseEther(value) });
         } else {
-            const tx = await unstake({ value: ethers.parseEther(value) });
-            if (tx) {
-                setOption(Options.Hiden);
-            }
+            tx = await unstake({ value: ethers.parseEther(value) });
         }
+        if (tx) {
+            setOption(Options.Hiden);
+        }
+        setLoading(false);
     }
 
     return (

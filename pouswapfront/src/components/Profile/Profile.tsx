@@ -8,6 +8,7 @@ import money from "../../utils/asset/images/money.png";
 import coin from "../../utils/asset/images/coin.png";
 import Modal from "./Modal";
 import { StakingContext } from "../../utils/hooks/Staking";
+import Loader from "../Loading/Loading";
 
 enum Options {
     Hiden,
@@ -16,6 +17,8 @@ enum Options {
 }
 
 export const Profile = () => {
+
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [option, setOption] = useState<Options>(Options.Hiden);
     const [rewards, setRewards] = useState<number>(0);
@@ -119,7 +122,8 @@ export const Profile = () => {
                     </div>
                 </Block>
             </motion.div>
-            <Modal option={option} setOption={setOption} />
+            <Modal option={option} setOption={setOption} setLoading={setLoading} />
+            {loading && <Loader />}
         </div >
     );
 };

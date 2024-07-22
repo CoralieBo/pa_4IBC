@@ -11,9 +11,11 @@ import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { ethers } from "ethers";
 import { FactoryContext } from "../../utils/hooks/Factory";
 import User from "../../services/User";
+import Loader from "../Loading/Loading";
 
 const Swap = () => {
     const [scope, animate] = useAnimate();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
@@ -34,32 +36,32 @@ const Swap = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
-    useEffect(() => {
-        async function fetchData() {
-            if (searchParams.get("tokenA")) {
-                const tokenA = await new Token().getByAddress(searchParams.get("tokenA")!);
-                setToken1(tokenA);
-                const balanceA = await getBalance(token1?.address!, address!);
-                setBalance1(ethers.formatEther(balanceA.toString()));
-            }
-            if (searchParams.get("tokenB")) {
-                const tokenB = await new Token().getByAddress(searchParams.get("tokenB")!);
-                setToken2(tokenB);
-                const balanceB = await getBalance(token2?.address!, address!);
-
-                setBalance2(ethers.formatEther(balanceB.toString()));
-            }
-            if (!searchParams.get("tokenA") && !searchParams.get("tokenB")) {
-                const tokens = await new Token().getAll();
-                setToken1(tokens[0]);
-                setToken2(tokens[1]);
-                const balanceA = await getBalance(tokens[0].address, address!);
-                setBalance1(ethers.formatEther(balanceA.toString()));
-                const balanceB = await getBalance(tokens[1].address, address!);
-                setBalance2(ethers.formatEther(balanceB.toString()));
-            }
+    async function fetchData() {
+        if (searchParams.get("tokenA")) {
+            const tokenA = await new Token().getByAddress(searchParams.get("tokenA")!);
+            setToken1(tokenA);
+            const balanceA = await getBalance(token1?.address!, address!);
+            setBalance1(parseFloat(ethers.formatEther(balanceA.toString())).toFixed(2));
         }
+        if (searchParams.get("tokenB")) {
+            const tokenB = await new Token().getByAddress(searchParams.get("tokenB")!);
+            setToken2(tokenB);
+            const balanceB = await getBalance(token2?.address!, address!);
 
+            setBalance2(parseFloat(ethers.formatEther(balanceB.toString())).toFixed(2));
+        }
+        if (!searchParams.get("tokenA") && !searchParams.get("tokenB")) {
+            const tokens = await new Token().getAll();
+            setToken1(tokens[0]);
+            setToken2(tokens[1]);
+            const balanceA = await getBalance(tokens[0].address, address!);
+            setBalance1(parseFloat(ethers.formatEther(balanceA.toString())).toFixed(2));
+            const balanceB = await getBalance(tokens[1].address, address!);
+            setBalance2(parseFloat(ethers.formatEther(balanceB.toString())).toFixed(2));
+        }
+    }
+
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -76,15 +78,21 @@ const Swap = () => {
 
     async function swap() {
         if (!token1 || !token2) return;
+        setLoading(true);
         const tx = await approve(token1.address, ethers.parseEther(amount1.toString()), pairAddress!);
-        if (!tx) return;
+        if (!tx) {
+            setLoading(false);
+            return;
+        }
         const swap = await swapFrom({ pairAddress: pairAddress!, amount: ethers.parseEther(amount1.toString()), tokenAddress: token1.address });
         if (swap) {
             const user = await new User().getOneByPublicKey(address!);
-            await new User().update(user.public_key, user.signature, user.swap+1, user.role, user.status);
-            await new Token().update(token1.ID, token1.name, token1.symbole, token1.address, token1.logo, token1.price, token1.pools, token1?.trades!+1);
-            await new Token().update(token2.ID, token2.name, token2.symbole, token2.address, token2.logo, token2.price, token2.pools, token2?.trades!+1);
+            await new User().update(user.public_key, user.signature, user.swap + 1, user.role, user.status);
+            await new Token().update(token1.ID, token1.name, token1.symbole, token1.address, token1.logo, token1.price, token1.pools, token1?.trades! + 1);
+            await new Token().update(token2.ID, token2.name, token2.symbole, token2.address, token2.logo, token2.price, token2.pools, token2?.trades! + 1);
         }
+        fetchData();
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -224,20 +232,17 @@ const Swap = () => {
                             </div>
                         </div>
                     </div>
-                    <button onClick={swap} disabled={!pairAddress} className='bg-colors-green1 rounded-lg w-full h-12 mt-4 text-white font-semibold'>
-                        {pairAddress ?
-                            "Swap" :
-                            "No pair found"
+                    <button onClick={swap} disabled={!pairAddress || amount1 == 0} className='bg-colors-green1 rounded-lg w-full h-12 mt-4 text-white font-semibold'>
+                        {loading ?
+                            "Loading..." :
+                            pairAddress ?
+                                "Swap" :
+                                "No pair found"
                         }
                     </button>
-                    {/* {haveInvested && ( */}
-                    <p className='w-full text-center text-colors-black2 underline hover:no-underline'>
-                        <a target="_blank" rel="noreferrer" href={`https://sepolia.etherscan.io/tx/`}> Check your transaction on-Chain </a>
-                    </p>
-                    {/* )} */}
                 </div>
             </div>
-
+            {loading && <Loader />}
         </div>
     );
 }

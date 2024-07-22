@@ -9,9 +9,11 @@ import { SimpleTokensContext } from "../../../utils/hooks/SimpleTokens";
 import { ethers } from "ethers";
 import Token from "../../../services/Tokens";
 import { useLocation } from "react-router-dom";
+import Loader from "../../Loading/Loading";
 
 const NewPool = () => {
     const [scope, animate] = useAnimate();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
@@ -79,25 +81,29 @@ const NewPool = () => {
 
     async function addPool() {
         if (amount1 === 0 || amount2 === 0) return;
+        setLoading(true);
         let tx = await approve(token1?.address!, ethers.parseEther(amount1.toString()), process.env.REACT_APP_FACTORY_ADDRESS!);
-        if (!tx) return;
+        if (!tx) { setLoading(false); return }
         tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()), process.env.REACT_APP_FACTORY_ADDRESS!);
-        if (!tx) return;
+        if (!tx) { setLoading(false); return }
         const poolTx = await createPool({ token1: token1?.address!, token2: token2?.address!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
-        if (!poolTx) return;
+        if (!poolTx) { setLoading(false); return }
         const pools = await getAllPools();
         const length = pools[0].length - 1;
         new Token().update(token1?.ID!, token1?.name!, token1?.symbole!, token1?.address!, token1?.logo!, token1?.price!, pools[0][length], token1?.trades!);
         new Token().update(token2?.ID!, token2?.name!, token2?.symbole!, token2?.address!, token2?.logo!, token2?.price!, pools[0][length], token2?.trades!);
+        setLoading(false);
     }
 
     async function addLiq() {
         if (amount1 === 0 || amount2 === 0) return;
+        setLoading(true);
         let tx = await approve(token1?.address!, ethers.parseEther(amount1.toString()), pairAddress!);
-        if (!tx) return;
+        if (!tx) { setLoading(false); return }
         tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()), pairAddress!);
-        if (!tx) return;
+        if (!tx) { setLoading(false); return }
         await addLiquidity({ poolAddress: pairAddress!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -225,17 +231,20 @@ const NewPool = () => {
                     <p className="text-colors-black2 text-sm font-medium ml-2">{token1?.symbole} per {token2?.symbole}</p>
                     <button
                         onClick={pairAddress ? addLiq : addPool}
-                        disabled={token1?.address === token2?.address || !token1 || !token2 || !isConnected}
+                        disabled={token1?.address === token2?.address || !token1 || !token2 || !isConnected || amount1 === 0 || amount2 === 0}
                         className="w-full bg-colors-green1 text-colors-white2 rounded-lg p-2 mt-4">
                         {
-                            pairAddress ?
-                                "Add liquidity"
-                                :
-                                "Create pool"
+                            loading ?
+                                "Loading..." :
+                                pairAddress ?
+                                    "Add liquidity"
+                                    :
+                                    "Create pool"
                         }
                     </button>
                 </div>
             </div>
+            {loading && <Loader />}
         </div >
     );
 }
