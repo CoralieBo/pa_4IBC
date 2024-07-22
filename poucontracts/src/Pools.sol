@@ -4,9 +4,10 @@ pragma solidity 0.8.24;
 
 import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
+import "openzeppelin-contracts/contracts/access/Ownable.sol";
 import "./IFactory.sol";
 
-contract PouPools is ReentrancyGuard {
+contract PouPools is ReentrancyGuard, Ownable {
     ERC20 tokenA;
     ERC20 tokenB;
     uint public k; // Constant used to calculate the price (tokenA * tokenB = k)
@@ -25,7 +26,7 @@ contract PouPools is ReentrancyGuard {
     uint256 public totalFeesA;
     uint256 public totalFeesB;
 
-    constructor(ERC20 _tokenA, ERC20 _tokenB, address _factory, uint256 _amountA, uint256 _amountB){
+    constructor(ERC20 _tokenA, ERC20 _tokenB, address _factory, uint256 _amountA, uint256 _amountB, address owner) Ownable(owner){
         tokenA = _tokenA;
         tokenB = _tokenB;
         factory = IPouFactory(_factory);
@@ -40,7 +41,7 @@ contract PouPools is ReentrancyGuard {
         _;
     }
 
-    function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant isNotClosed() {
+    function addLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant onlyOwner isNotClosed {
         require(tokenA.allowance(msg.sender, address(this)) >= _amountA, "no allowance for tokenA");
         require(tokenB.allowance(msg.sender, address(this)) >= _amountB, "no allowance for tokenB");
         uint256 current_ratio = getSupplyA() / getSupplyB();
@@ -56,7 +57,7 @@ contract PouPools is ReentrancyGuard {
         liquidityProvider[msg.sender].amountB += _amountB;
     }
 
-    function removeLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant {
+    function removeLiquidity(uint256 _amountA, uint256 _amountB) external nonReentrant onlyOwner {
         require(liquidityProvider[msg.sender].amountA >= _amountA, "Not enough liquidity for tokenA");
         require(liquidityProvider[msg.sender].amountB >= _amountB, "Not enough liquidity for tokenB");
         uint256 current_ratio = getSupplyA() / getSupplyB();
@@ -69,7 +70,7 @@ contract PouPools is ReentrancyGuard {
         tokenB.transfer(msg.sender, _amountB);
     }
 
-    function swap(uint256 _amountFrom, address _tokenFrom) external nonReentrant isNotClosed {
+    function swap(uint256 _amountFrom, address _tokenFrom) external nonReentrant onlyOwner isNotClosed {
         ERC20 tokenFrom = ERC20(_tokenFrom);
         ERC20 tokenTo = tokenFrom == tokenA ? tokenB : tokenA;
         require(tokenFrom.allowance(msg.sender, address(this)) >= _amountFrom, "no allowance for token");
@@ -110,7 +111,7 @@ contract PouPools is ReentrancyGuard {
         }
     }
 
-    function claim() external nonReentrant {
+    function claim() external nonReentrant onlyOwner {
         uint256 feesA = liquidityProvider[msg.sender].feesA;
         uint256 feesB = liquidityProvider[msg.sender].feesB;
         require(feesA > 0 || feesB > 0, "No fees to claim");

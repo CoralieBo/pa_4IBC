@@ -11,6 +11,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
     struct InfosPool {
         ERC20 tokenA;
         ERC20 tokenB;
+        bool isClosed;
     }
 
     mapping (address => InfosPool) public pools;
@@ -18,14 +19,16 @@ contract PouFactory is Ownable, ReentrancyGuard {
     ERC20[] public tokens;
 
     uint256 private fee; // 1% = 100
+    bytes32 public constant USER_ROLE = keccak256("USER_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     event NewPoolCreated(address poolAddress);
 
-    constructor() Ownable(msg.sender){
+    constructor(address owner) Ownable(owner){
         fee = 10; // 0.1%
     }
 
-    function createPool(address _addressA, address _addressB, uint256 _amountA, uint256 _amountB) external nonReentrant {
+    function createPool(address _addressA, address _addressB, uint256 _amountA, uint256 _amountB) external onlyOwner nonReentrant {
         ERC20 _tokenA = ERC20(_addressA);
         ERC20 _tokenB = ERC20(_addressB);
 
@@ -40,11 +43,11 @@ contract PouFactory is Ownable, ReentrancyGuard {
             tokens.push(_tokenB);
         }
         
-        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this), _amountA, _amountB);
+        PouPools newPool = new PouPools(_tokenA, _tokenB, address(this), _amountA, _amountB, owner());
         _tokenA.transferFrom(msg.sender, address(newPool), _amountA);
         _tokenB.transferFrom(msg.sender, address(newPool), _amountB);
 
-        pools[address(newPool)] = InfosPool(_tokenA, _tokenB);
+        pools[address(newPool)] = InfosPool(_tokenA, _tokenB, false);
         pairsAddresses.push(address(newPool));
         emit NewPoolCreated(address(newPool));
     }
@@ -135,6 +138,7 @@ contract PouFactory is Ownable, ReentrancyGuard {
         require(pools[_pairAddress].tokenA != ERC20(address(0)), "Pool not exist");
         PouPools pool = PouPools(_pairAddress);
         pool.closePool();
+        pools[_pairAddress].isClosed = true;
         uint pairsLenght = pairsAddresses.length;
         for (uint i = 0; i < pairsLenght; i++){
             if(pairsAddresses[i] == _pairAddress){
