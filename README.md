@@ -11,15 +11,12 @@ Pouswap is a comprehensive decentralized application (dApp) simulating a decentr
 
 - [Coralie Boyer (4IBC)](https://github.com/coralieBo/)
 
-## Demo
-
-https://pouswap.vercel.app/
-
 ## Doc
 
 [Front end](https://www.figma.com/file/1zeaiKvSYknqSGLdqE8F6j/PA_4IBC?type=design&node-id=0%3A1&mode=design&t=UEOdZx0NlBV7oK2s-1)
 [Back end](https://www.figma.com/file/1zeaiKvSYknqSGLdqE8F6j/PA_4IBC?type=design&node-id=1%3A3&mode=design&t=UEOdZx0NlBV7oK2s-1)
 [Blockchain](https://www.figma.com/file/1zeaiKvSYknqSGLdqE8F6j/PA_4IBC?type=design&node-id=1%3A4&mode=design&t=UEOdZx0NlBV7oK2s-1)
+[Schemas](https://www.figma.com/design/tZl2XqFs8lwh31n6pBNvES/Schemas_PA_4IBC?node-id=0-1&t=TcniyAQ7z6SeAWTj-1)
 
 ## Features
 
