@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.24;
 
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "./Pools.sol";
 
 interface IPouFactory {

@@ -152,6 +152,14 @@ contract PouPools is ReentrancyGuard, Ownable {
         return liquidityProviders;
     }
 
+    function getLiquidityProvided(address account) view external returns(uint256, uint256) {
+        return (liquidityProvider[account].amountA, liquidityProvider[account].amountB);
+    }
+
+    function getRewards(address account) view external returns(uint256, uint256){
+        return (liquidityProvider[account].feesA, liquidityProvider[account].feesB);
+    }
+
     function getStatus() view external returns(bool) {
         return closed;
     }

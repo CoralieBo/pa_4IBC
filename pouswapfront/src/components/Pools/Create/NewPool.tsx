@@ -14,6 +14,7 @@ import Loader from "../../Loading/Loading";
 const NewPool = () => {
     const [scope, animate] = useAnimate();
     const [loading, setLoading] = useState<boolean>(false);
+    const [remove, setRemove] = useState<boolean>(false);
 
     const [size, setSize] = useState({ columns: 0, rows: 0 });
 
@@ -30,7 +31,7 @@ const NewPool = () => {
     const [balance2, setBalance2] = useState<string>("0");
 
     const context = useContext(FactoryContext);
-    const { createPool, addLiquidity, getAllPools, getPairAddress, bToDeposite } = context!;
+    const { createPool, addLiquidity, removeLiquidity, getAllPools, getPairAddress, bToDeposite } = context!;
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -50,17 +51,15 @@ const NewPool = () => {
         fetchData();
     }, []);
 
-
-
     useEffect(() => {
         const fetchData = async () => {
             if (token1) {
                 const balanceToken1 = await getBalance(token1?.address!, address!);
-                setBalance1(ethers.formatEther(balanceToken1.toString()));
+                setBalance1(parseFloat(ethers.formatEther(balanceToken1.toString())).toFixed(2));
             }
             if (token2) {
                 const balanceToken2 = await getBalance(token2?.address!, address!);
-                setBalance2(ethers.formatEther(balanceToken2.toString()));
+                setBalance2(parseFloat(ethers.formatEther(balanceToken2.toString())).toFixed(2));
             }
             if (token1 && token2) {
                 const pairAddress = await getPairAddress(token1?.address!, token2?.address!);
@@ -103,6 +102,13 @@ const NewPool = () => {
         tx = await approve(token2?.address!, ethers.parseEther(amount2.toString()), pairAddress!);
         if (!tx) { setLoading(false); return }
         await addLiquidity({ poolAddress: pairAddress!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
+        setLoading(false);
+    }
+
+    async function removeLiq() {
+        if (amount1 === 0 || amount2 === 0) return;
+        setLoading(true);
+        await removeLiquidity({ poolAddress: pairAddress!, amount1: ethers.parseEther(amount1.toString()), amount2: ethers.parseEther(amount2.toString()) });
         setLoading(false);
     }
 
@@ -229,15 +235,20 @@ const NewPool = () => {
                         }
                     </p>
                     <p className="text-colors-black2 text-sm font-medium ml-2">{token1?.symbole} per {token2?.symbole}</p>
+                    <input type="checkbox" disabled={!pairAddress} className="mt-2 cursor-pointer" id="checkbox" onChange={() => setRemove(!remove)} />
+                    <label className="text-colors-black2 text-sm font-medium pl-1 cursor-pointer" htmlFor="checkbox">Remove liquidity</label>
                     <button
-                        onClick={pairAddress ? addLiq : addPool}
+                        onClick={pairAddress ? (remove ? removeLiq : addLiq) : addPool}
                         disabled={token1?.address === token2?.address || !token1 || !token2 || !isConnected || amount1 === 0 || amount2 === 0}
                         className="w-full bg-colors-green1 text-colors-white2 rounded-lg p-2 mt-4">
                         {
                             loading ?
                                 "Loading..." :
                                 pairAddress ?
-                                    "Add liquidity"
+                                    remove ?
+                                        "Remove liquidity"
+                                        :
+                                        "Add liquidity"
                                     :
                                     "Create pool"
                         }

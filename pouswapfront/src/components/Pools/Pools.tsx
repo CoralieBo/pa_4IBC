@@ -6,13 +6,18 @@ import { Link } from "react-router-dom";
 import PoolService from "../../services/Pools";
 import { FactoryContext } from "../../utils/hooks/Factory";
 import Token from "../../services/Tokens";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import Loader from "../Loading/Loading";
 // import money from "../../utils/asset/images/money.png";
 
 const Pools = () => {
     const [pools, setPools] = useState<PoolInterface[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const context = useContext(FactoryContext);
-    const { getAllPools, getSupplyA, getSupplyB } = context!;
+    const { getAllPools, getSupplyA, getSupplyB, getLiquidityProvided, getRewards, claim } = context!;
+
+    const { address } = useWeb3ModalAccount();
 
     useEffect(() => {
         const fetchPools = async () => {
@@ -23,12 +28,16 @@ const Pools = () => {
                 const token2 = await new Token().getByAddress(datas[1][i][1]);
                 const supply1 = await getSupplyA(datas[0][i]);
                 const supply2 = await getSupplyB(datas[0][i]);
+                const liquidity = await getLiquidityProvided(datas[0][i], address!);
+                const rewards = await getRewards(datas[0][i], address!);
                 pools.push({
                     address: datas[0][i],
                     token1: token1,
                     token2: token2,
                     supply1: supply1,
-                    supply2: supply2
+                    supply2: supply2,
+                    liquidityProvided: liquidity,
+                    rewards: rewards
                 });
             }
             setPools(pools);
@@ -71,21 +80,25 @@ const Pools = () => {
                                         <td></td>
                                         <td className="font-medium text-center absolute left-48 py-4">
                                             Rewards: <br />
-                                            <span className="font-normal">0.01 tst1 / 0.032 tst2</span>
+                                            <span className="font-normal">{pool.rewards![0].toFixed(2)} {pool.token1.symbole} / {pool.rewards![1].toFixed(2)} {pool.token2.symbole}</span>
                                         </td>
                                         <td className="text-center py-4">
-                                            <button className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
+                                            <button onClick={async () => {
+                                                setLoading(true);
+                                                await claim({ poolAddress: pool.address });
+                                                setLoading(false);
+                                            }} className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
                                                 Claim
                                             </button>
                                         </td>
-                                        <td className="font-medium text-center absolute right-72 py-4">
+                                        <td className="font-medium text-center absolute right-80 py-4">
                                             Liquidity : <br />
-                                            <span className="font-normal">0.01 tst1 / 0.032 tst2</span>
+                                            <span className="font-normal">{pool.liquidityProvided![0].toFixed(2)} {pool.token1.symbole} / {pool.liquidityProvided![1].toFixed(2)} {pool.token2.symbole}</span>
                                         </td>
                                         <td className="text-center py-4">
                                             <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`}
                                                 className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
-                                                Add liq
+                                                Add / Remove
                                             </Link>
                                         </td>
                                         <td></td>
@@ -99,6 +112,7 @@ const Pools = () => {
             {/* <div className="absolute w-44 rotate-12 top-28 right-44 drop-shadow-lg">
                 <img src={money} alt="money.png" />
             </div> */}
+            {loading && <Loader />}
         </div>
     );
 };

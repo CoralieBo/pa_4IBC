@@ -89,7 +89,11 @@ export const Profile = () => {
                         <button onClick={() => setOption(Options.Stake)} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
                             Stake :D
                         </button>
-                        <button onClick={claim} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+                        <button onClick={async () => {
+                            setLoading(true);
+                            await claim();
+                            setLoading(false);
+                        }} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
                             Claim !
                         </button>
                         <button onClick={() => setOption(Options.Unstake)} className="px-6 py-2 font-medium bg-colors-green1 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">

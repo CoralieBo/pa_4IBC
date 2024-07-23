@@ -7,4 +7,6 @@ export interface PoolInterface {
     token2: TokenInterface;
     supply1?: number;
     supply2?: number;
+    liquidityProvided?: number[];
+    rewards?: number[];
 }
