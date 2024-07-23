@@ -6,26 +6,30 @@ import Users from './components/Users/Users';
 import Admins from './components/Admins/Admins';
 import { createWeb3Modal, defaultConfig, useWeb3ModalAccount } from '@web3modal/ethers/react'
 import ConnectButton from './asset/hooks/connectWallet';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { AdminContext } from './asset/hooks/isAdmin';
+import PendingTx from './components/PendingTx/PendingTx';
+import Tokens from './components/Tokens/Tokens';
+import Stats from './components/Stats/Stats';
+import Transactions from './components/Transactions/Transactions';
 
 // 1. Get projectId
 const projectId = 'c4c9fb94605ef75f7878b0f8f7452e7d'
 
 // 2. Set chains
-const mainnet = {
-  chainId: 1,
-  name: 'Ethereum',
+const chains = [{
+  chainId: 11155111,
+  name: 'Sepolia',
   currency: 'ETH',
-  explorerUrl: 'https://etherscan.io',
-  rpcUrl: 'https://cloudflare-eth.com'
-}
+  explorerUrl: 'https://sepolia.etherscan.io',
+  rpcUrl: process.env.REACT_APP_RPC_URL!
+}]
 
 // 3. Create a metadata object
 const metadata = {
-  name: 'My Website',
-  description: 'My Website description',
-  url: 'https://mywebsite.com', // origin must match your domain & subdomain
+  name: 'PouSwap Admin',
+  description: 'Pouswap admin dashboard',
+  url: 'https://pouswap-admin.vercel.app/', // origin must match your domain & subdomain
   icons: ['https://avatars.mywebsite.com/']
 }
 
@@ -35,13 +39,13 @@ const ethersConfig = defaultConfig({
   metadata,
 
   /*Optional*/
-  defaultChainId: 1, // used for the Coinbase SDK
+  defaultChainId: 11155111, // used for the Coinbase SDK
 })
 
 // 5. Create a Web3Modal instance
 createWeb3Modal({
   ethersConfig,
-  chains: [mainnet],
+  chains: chains,
   projectId,
   enableAnalytics: true // Optional - defaults to your Cloud configuration
 })
@@ -58,13 +62,15 @@ function App() {
       :
       <div className="bg-colors-green1 w-full h-screen flex">
         <Navbar />
-        <div className='w-5/6 h-screen overflow-scroll bg-colors-gray1 rounded-s-3xl'>
+        <div className='w-5/6 h-screen overflow-y-scroll overflow-x-hidden bg-colors-gray1 rounded-s-3xl'>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/tokens" element={<div />} />
-            <Route path="/fees" element={<div />} />
+            <Route path="/tokens" element={<Tokens />} />
+            <Route path="/stats" element={<Stats />} />
             <Route path="/admins" element={<Admins />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/pending" element={<PendingTx />} />
           </Routes>
         </div>
       </div>

@@ -42,7 +42,16 @@ func main() {
 	app.Route("/users", func(api fiber.Router) {
 		api.Get("/", controllers.GetAllUsers).Name("getAll")
 		api.Post("/add", controllers.AddUser).Name("add")
+		api.Put("/update", controllers.UpdateUser).Name("update")
 		api.Get("/getByPK/:publicKey", controllers.GetUserByPK).Name("getByPK")
+	})
+
+	app.Route("/tokens", func(api fiber.Router) {
+		api.Get("/", controllers.GetAllTokens).Name("getAll")
+		api.Get("/getByAddress/:address", controllers.GetByAddress).Name("getByAddress")
+		api.Post("/add", controllers.AddToken).Name("add")
+		api.Put("/update", controllers.UpdateToken).Name("update")
+		api.Delete("/delete/:token", controllers.DeleteToken).Name("delete")
 	})
 
 	log.Info("Server started on port 3001")

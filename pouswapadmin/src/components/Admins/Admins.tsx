@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Title from "../Title/Title";
 import { IUser } from "../../interfaces/Users";
 import User from "../../services/User";
 import { cropAddress } from "../../asset/utils/cropAddress";
 import StackedNotifications from "../Notifications/Notifications";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { SafeContext } from "../../asset/hooks/safe";
+import { Link } from "react-router-dom";
 
 const Admins = () => {
     const [admins, setAdmins] = useState<IUser[] | null>(null);
     const [userSelected, setUserSelected] = useState<IUser | null>(null);
     const [actionActive, setActionActive] = useState<boolean>(false);
     const [notification, setNotification] = useState<boolean>(false);
+    const { accountAddress, removeAdmin } = useContext(SafeContext);
+    const { address } = useWeb3ModalAccount();
 
-    useEffect(() => {
-        async function fetchDatas() {
-            try {
-                const admins = await new User().getAll();
-                setAdmins(admins);
-            } catch (e) {
-                console.error(e);
-            }
+    async function fetchDatas() {
+        try {
+            const admins: IUser[] = await new User().getAll();
+            setAdmins(admins.filter((user) => user.role === "admin" || user.role === "pendingForUser"));
+        } catch (e) {
+            console.error(e);
         }
-
+    }
+    useEffect(() => {
         fetchDatas();
     }, []);
 
@@ -33,8 +37,12 @@ const Admins = () => {
         if (!actionActive || !userSelected) {
             return;
         }
-        await new User().update({ ...userSelected, role: "user" });
-        setNotification(true);
+        const result = await removeAdmin({ ownerAddress: userSelected.public_key });
+        if (result) {
+            await new User().update({ ...userSelected, role: "pendingForUser" });
+            setNotification(true);
+            fetchDatas();
+        }
     }
 
     useEffect(() => {
@@ -46,8 +54,9 @@ const Admins = () => {
 
     return (
         <section className="mx-auto max-w-7xl px-4 py-8 text-colors-black1">
-            <Title Text="Users" />
-            <div className="w-full flex justify-end px-8">
+            <Title Text="Admins" />
+            <div className="w-full flex justify-between items-center px-8">
+                <p>Safe address : {cropAddress(accountAddress!)}</p>
                 <div className="relative w-full max-w-xs">
                     <input type="text" placeholder="Search" className="w-full px-3 py-3 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border border-gray-400 rounded-lg focus:outline-none focus:ring-none" />
                     <svg className="absolute top-1/2 right-3 transform -translate-y-1/2 w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -89,7 +98,7 @@ const Admins = () => {
                                                 </div>
                                             </td>
                                             <td className="px-12 py-4 text-sm font-medium whitespace-nowrap text-center">
-                                                <h4 className="text-gray-700">{cropAddress(user.public_key)}</h4>
+                                                <h4 className="text-gray-700">{cropAddress(user.public_key)} {user.public_key == address && "(me)"}</h4>
                                             </td>
                                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
                                                 <div>
@@ -98,9 +107,15 @@ const Admins = () => {
                                             </td>
 
                                             <td className="px-4 py-4 space-x-2 text-sm text-right whitespace-nowrap">
-                                                <button onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
-                                                    Downgrade to User
-                                                </button>
+                                                {user.role === "pendingForUser" ?
+                                                    <Link to={"/Pending"} className="px-2 py-1.5 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                        Upgrade requested
+                                                    </Link>
+                                                    :
+                                                    <button disabled={user.public_key == address} onClick={() => action(user)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                        Downgrade to User
+                                                    </button>
+                                                }
                                             </td>
                                         </tr>
                                     ))}

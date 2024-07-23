@@ -17,12 +17,24 @@ func AddUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&userReq); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
 	}
-	user := models.User{PublicKey: userReq.PublicKey, Signature: userReq.Signature, Role: "user", Status: "active"}
+	user := models.User{PublicKey: userReq.PublicKey, Signature: userReq.Signature, Role: "user", Status: "active", Swap: 0}
 	err := db.DB.CreateUser(user)
 	if err != nil {
 		return c.SendString(err.Error())
 	}
 	return c.SendString("User added successfully")
+}
+
+func UpdateUser(c *fiber.Ctx) error {
+	var user models.User
+	if err := c.BodyParser(&user); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid request")
+	}
+	err := db.DB.UpdateUser(user)
+	if err != nil {
+		return c.SendString(err.Error())
+	}
+	return c.SendString("User updated successfully")
 }
 
 func GetUserByPK(c *fiber.Ctx) error {

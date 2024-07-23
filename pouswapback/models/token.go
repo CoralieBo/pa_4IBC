@@ -9,6 +9,8 @@ type Token struct {
 	Name    string  `json:"name"`
 	Symbole string  `json:"symbole"`
 	Price   float32 `json:"price"`
-	Volume  float32 `json:"volume"`
-	Trades  int     `json:"trades"`
+	Logo    string  `json:"logo"`
+	Address string  `json:"address"`
+	Pools   string  `json:"pools"`
+	Trades  uint    `json:"trades"`
 }
