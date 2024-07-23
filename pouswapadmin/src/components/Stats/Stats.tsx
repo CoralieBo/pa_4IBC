@@ -28,6 +28,8 @@ const Stats = () => {
             const users = await new User().getAll();
             setUsers(users);
             const banned = users.filter((user: IUser) => user.status === "ban");
+            console.log(banned);
+            
             setBanned(banned);
             const stakers = await getStakers();
             setStakers(stakers);
@@ -172,10 +174,10 @@ const Stats = () => {
                                 {crypto.CoinInfo.FullName}
                             </td>
                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
-                                {crypto.DISPLAY.USD.PRICE}
+                                {crypto.DISPLAY?.USD?.PRICE}
                             </td>
                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
-                                {crypto.DISPLAY.USD.VOLUME24HOUR}
+                                {crypto.DISPLAY?.USD?.VOLUME24HOUR}
                             </td>
                         </tr>
                     ))}

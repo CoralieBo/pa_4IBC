@@ -80,7 +80,7 @@ const Pools = () => {
                                         <td></td>
                                         <td className="font-medium text-center absolute left-48 py-4">
                                             Rewards: <br />
-                                            <span className="font-normal">{pool.rewards![0].toFixed(2)} {pool.token1.symbole} / {pool.rewards![1].toFixed(2)} {pool.token2.symbole}</span>
+                                            <span className="font-normal">{pool.rewards![0].toFixed(2)} {pool.token1.symbole ? pool.token1.symbole : "?¿"} / {pool.rewards![1].toFixed(2)} {pool.token2.symbole ? pool.token2.symbole : "?¿"}</span>
                                         </td>
                                         <td className="text-center py-4">
                                             <button onClick={async () => {
@@ -93,13 +93,15 @@ const Pools = () => {
                                         </td>
                                         <td className="font-medium text-center absolute right-80 py-4">
                                             Liquidity : <br />
-                                            <span className="font-normal">{pool.liquidityProvided![0].toFixed(2)} {pool.token1.symbole} / {pool.liquidityProvided![1].toFixed(2)} {pool.token2.symbole}</span>
+                                            <span className="font-normal">{pool.liquidityProvided![0].toFixed(2)} {pool.token1.symbole ? pool.token1.symbole : "?¿"} / {pool.liquidityProvided![1].toFixed(2)} {pool.token2.symbole ? pool.token2.symbole : "?¿"}</span>
                                         </td>
                                         <td className="text-center py-4">
-                                            <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`}
-                                                className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
-                                                Add / Remove
-                                            </Link>
+                                            {pool.token1.symbole && pool.token2.symbole &&
+                                                <Link to={`/Create?tokenA=${pool.token1.address}&tokenB=${pool.token2.address}`}
+                                                    className="bg-colors-green1 text-white font-medium text-sm px-3 py-2 mr-4 rounded-lg">
+                                                    Add / Remove
+                                                </Link>
+                                            }
                                         </td>
                                         <td></td>
                                     </motion.tr>
@@ -158,7 +160,7 @@ const TableRows = ({ pool }: TableRowsProps) => {
                 <div>
                     {/* <Link to={`/Pools/${pool.address}`} className="block mb-1 font-medium hover:underline"> */}
                     <p className="mb-1 font-medium">
-                        {pool.token1.symbole} / {pool.token2.symbole}
+                        {pool.token1.symbole ? pool.token1.symbole : "?¿"} / {pool.token2.symbole ? pool.token2.symbole : "?¿"}
                     </p>
                     {/* </Link> */}
                 </div>
@@ -172,13 +174,13 @@ const TableRows = ({ pool }: TableRowsProps) => {
 
             <td className="p-4">
                 <span>
-                    {pool.supply1?.toFixed(2)} {pool.token1.symbole.toUpperCase()}
+                    {pool.supply1?.toFixed(2)} {pool.token1.symbole ? pool.token1.symbole.toUpperCase() : "?¿"}
                 </span>
             </td>
 
             <td className="p-4">
                 <span>
-                    {pool.supply2?.toFixed(2)} {pool.token2.symbole.toUpperCase()}
+                    {pool.supply2?.toFixed(2)} {pool.token2.symbole ? pool.token2.symbole.toUpperCase() : "?¿"}
                 </span>
             </td>
 

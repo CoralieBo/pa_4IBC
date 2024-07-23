@@ -20,7 +20,7 @@ const Transactions = () => {
         <section className="mx-auto max-w-7xl px-4 py-8 text-colors-black1">
             <Title Text="Transactions" />
             <p className="text-gray-800 text-lg">Here you can find the addresses and ABIs of the contracts used in the application.</p>
-            <p className="text-gray-800 text-lg mb-4">Go to the <a href="https://app.safe.global/apps/open?safe=sep:0xC373BB0B7CfA328732cFA425D008559bBe3024e9&appUrl=https%3A%2F%2Fapps-portal.safe.global%2Ftx-builder" target="_blank" rel="noreferrer" className="text-colors-green1">Safe App</a> to interact with the contracts.</p>
+            <p className="text-gray-800 text-lg mb-4">Go to the <a href="https://app.safe.global/apps/open?safe=sep:0xF0743aF38F401F67E1b22B1339b86cd24D0B9C77&appUrl=https%3A%2F%2Fapps-portal.safe.global%2Ftx-builder" target="_blank" rel="noreferrer" className="text-colors-green1">Safe App</a> to interact with the contracts.</p>
             <h1 className="text-2xl font-semibold text-gray-800 mb-3">Contracts addresses</h1>
             <div className="grid grid-cols-2 gap-8 mx-4">
                 <div className="w-full overflow-hidden rounded-xl border-2 border-zinc-900 bg-white md:grid-cols-12">
