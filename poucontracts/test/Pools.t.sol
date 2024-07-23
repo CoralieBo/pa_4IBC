@@ -27,9 +27,9 @@ contract PouPoolsTest is Test {
     function setUp() public {
         tokenA = new TokenA();
         tokenB = new TokenB();
-        factory = new PouFactory();
+        factory = new PouFactory(address(this));
 
-        pouPools = new PouPools(tokenA, tokenB, address(factory), 1000 ether, 2000 ether);
+        pouPools = new PouPools(tokenA, tokenB, address(factory), 1000 ether, 2000 ether, address(this));
         tokenA.transfer(address(pouPools), 1000 ether);
         tokenB.transfer(address(pouPools), 2000 ether);
         assertEq(tokenA.balanceOf(address(pouPools)), 1000 ether);

@@ -26,7 +26,7 @@ contract PouFactoryTest is Test {
     function setUp() public {
         tokenA = new TokenA();
         tokenB = new TokenB();
-        factory = new PouFactory();
+        factory = new PouFactory(address(this));
     }
 
     function test_CreatePool() public {
