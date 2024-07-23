@@ -11,6 +11,7 @@ import { createWeb3Modal, defaultConfig, useWeb3ModalAccount } from '@web3modal/
 import NewPool from './components/Pools/Create/NewPool';
 import ConnectButton from './utils/hooks/connectWallet';
 import Unauthorized from './components/Errors/401';
+import Profile from './components/Profile/Profile';
 
 function App() {
 
@@ -58,6 +59,7 @@ function App() {
           <Route path="/pools" element={<Pools />} />
           <Route path="/pools/:id" element={<Pool />} />
           <Route path="/create" element={<NewPool />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
         :

@@ -11,7 +11,16 @@ func (d *DatabasePostgres) CreateUser(user models.User) error {
 }
 
 func (d *DatabasePostgres) UpdateUser(user models.User) error {
-	result := d.Db.Save(&user)
+	var existingUser models.User
+	result := d.Db.Where("public_key = ?", user.PublicKey).First(&existingUser)
+	if result.Error != nil {
+		return result.Error
+	}
+	existingUser.PublicKey = user.PublicKey
+	existingUser.Role = user.Role
+	existingUser.Swap = user.Swap
+	existingUser.Status = user.Status
+	result = d.Db.Save(&existingUser)
 	if result.Error != nil {
 		return result.Error
 	}

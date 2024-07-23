@@ -5,37 +5,46 @@ import { SafeMultisigTransactionResponse } from "@safe-global/safe-core-sdk-type
 import { cropAddress } from "../../asset/utils/cropAddress";
 import StackedNotifications from "../Notifications/Notifications";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import User from "../../services/User";
 
 const PendingTx = () => {
     const { address } = useWeb3ModalAccount();
-    const { getPendingTransactions, signPendingTransaction } = useContext(SafeContext);
+    const { getPendingTransactions, executeTransaction } = useContext(SafeContext);
     const [transactions, setTransactions] = useState<SafeMultisigTransactionResponse[]>([]);
 
     const [notification, setNotification] = useState<boolean>(false);
 
-    useEffect(() => {
-        async function fetchDatas() {
-            const pendingTransactions = await getPendingTransactions();
-            console.log(pendingTransactions);
+    async function fetchDatas() {
+        const pendingTransactions = await getPendingTransactions();
+        console.log(pendingTransactions);
 
-            if (pendingTransactions) {
-                setTransactions(pendingTransactions);
-            }
+        if (pendingTransactions) {
+            setTransactions(pendingTransactions);
         }
+    }
 
+    useEffect(() => {
         fetchDatas();
     }, []);
 
-    async function signTx(txHash: string) {
-        try{
-        const response = await signPendingTransaction(txHash);
-        console.log(response);
-        setNotification(true);
+    async function signTx(txHash: string, userPk: string) {
+        try {
+            const response = await executeTransaction(txHash);
+            if (response) {
+                const userSelected = await new User().getOneByPublicKey(userPk);
+                if (userSelected.role === "pending") {
+                    await new User().update({ ...userSelected, role: "admin" });
+                }
+                if (userSelected.role === "pendingForUser") {
+                    await new User().update({ ...userSelected, role: "user" });
+                }
+                fetchDatas();
+                setNotification(true);
+            }
         } catch (e) {
             console.error(e);
         }
     }
-
 
     return (
         <section className="mx-auto max-w-7xl px-4 py-8 text-colors-black1">
@@ -43,7 +52,7 @@ const PendingTx = () => {
             <div className="flex flex-col mt-6">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <h2 className="text-lg font-semibold text-gray-800 ml-4">Add owner</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 ml-4">Set admins</h2>
                         <div className="overflow-hidden border border-gray-200 md:rounded-lg">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
@@ -88,7 +97,7 @@ const PendingTx = () => {
                                             </td>
                                             <td className="px-12 py-4 text-sm font-medium whitespace-nowrap text-center">
                                                 <h4 className="text-gray-700">
-                                                    {cropAddress((tx.dataDecoded as any).parameters[0].value)}
+                                                    {cropAddress((tx.dataDecoded as any)?.parameters[0].value)}
                                                 </h4>
                                             </td>
                                             <td className="px-4 py-4 text-sm whitespace-nowrap text-center">
@@ -104,7 +113,7 @@ const PendingTx = () => {
                                                         Signed
                                                     </button>
                                                 ) : (
-                                                    <button onClick={() => signTx(tx.safeTxHash)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
+                                                    <button onClick={() => signTx(tx.safeTxHash, (tx.dataDecoded as any).parameters[0].value)} className="px-2 py-1 text-white transition-colors duration-200 rounded-lg bg-blue-400 hover:bg-blue-500 focus:outline-none">
                                                         Sign
                                                     </button>
                                                 )}

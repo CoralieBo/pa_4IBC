@@ -36,7 +36,6 @@ func ConnectDatabase(DbHost, DbUser, DbPassword, DbName, DbPort string) {
 	log.Info("running migrations")
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Token{})
-	db.AutoMigrate(&models.History{})
 
 	DB = DatabasePostgres{
 		Db: db,

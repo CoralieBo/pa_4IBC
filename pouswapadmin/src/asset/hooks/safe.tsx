@@ -1,6 +1,6 @@
-import { ethers } from 'ethers'
+import { ContractTransactionReceipt, ethers } from 'ethers'
 import SafeApiKit, { SignatureResponse } from '@safe-global/api-kit'
-import Safe, { AddOwnerTxParams, EthersAdapter } from '@safe-global/protocol-kit'
+import Safe, { AddOwnerTxParams, EthersAdapter, RemoveOwnerTxParams } from '@safe-global/protocol-kit'
 import { createContext, useEffect, useState } from 'react'
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
@@ -9,8 +9,9 @@ import { sign } from 'crypto';
 const SafeContext = createContext({
     accountAddress: null as string | null,
     addAdmin: async (params: { ownerAddress: string }) => { },
+    removeAdmin: async (params: { ownerAddress: string }): Promise<boolean> => false,
     getPendingTransactions: async () => [] as SafeMultisigTransactionResponse[] | undefined,
-    signPendingTransaction: async (safeTxHash: string) => undefined as SignatureResponse | undefined
+    executeTransaction: async (safeTxHash: string) => undefined as ContractTransactionReceipt | null | undefined
 });
 
 function SafeContextProvider({ children }: { children: React.ReactNode }) {
@@ -24,19 +25,47 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
 
     async function addAdmin({ ownerAddress }: { ownerAddress: string }) {
         if (!protocolKit || !apiKit) return
-        const params: AddOwnerTxParams = {
-            ownerAddress
+        try {
+            const params: AddOwnerTxParams = {
+                ownerAddress
+            }
+            const safeTransaction = await protocolKit.createAddOwnerTx(params)
+            const safeTxHash = await protocolKit.getTransactionHash(safeTransaction)
+            const senderSignature = await protocolKit.signHash(safeTxHash)
+            await apiKit.proposeTransaction({
+                safeAddress,
+                safeTransactionData: safeTransaction.data,
+                safeTxHash,
+                senderAddress: address!,
+                senderSignature: senderSignature.data,
+            });
+        } catch (e) {
+            console.error(e);
         }
-        const safeTransaction = await protocolKit.createAddOwnerTx(params)
-        const safeTxHash = await protocolKit.getTransactionHash(safeTransaction)
-        const senderSignature = await protocolKit.signHash(safeTxHash)
-        await apiKit.proposeTransaction({
-            safeAddress,
-            safeTransactionData: safeTransaction.data,
-            safeTxHash,
-            senderAddress: address!,
-            senderSignature: senderSignature.data,
-        });
+    }
+
+    async function removeAdmin({ ownerAddress }: { ownerAddress: string }): Promise<boolean> {
+        if (!protocolKit || !apiKit) return false;
+        try {
+            const params: RemoveOwnerTxParams = {
+                ownerAddress,
+                threshold: 2
+            }
+            const safeTransaction = await protocolKit.createRemoveOwnerTx(params)
+            const safeTxHash = await protocolKit.getTransactionHash(safeTransaction)
+            const senderSignature = await protocolKit.signHash(safeTxHash)
+            await apiKit.proposeTransaction({
+                safeAddress,
+                safeTransactionData: safeTransaction.data,
+                safeTxHash,
+                senderAddress: address!,
+                senderSignature: senderSignature.data,
+            });
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
     }
 
     async function getPendingTransactions(): Promise<SafeMultisigTransactionResponse[] | undefined> {
@@ -44,18 +73,17 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
         return (await apiKit.getPendingTransactions(safeAddress)).results;
     }
 
-    async function signPendingTransaction(safeTxHash: string): Promise<SignatureResponse | undefined> {
+    async function executeTransaction(safeTxHash: string): Promise<ContractTransactionReceipt | null | undefined> {
         if (!protocolKit || !apiKit) return
-        const signature = await protocolKit.signHash(safeTxHash)
-        const response = await apiKit.confirmTransaction(safeTxHash, signature.data)
-        return response
-    }
-
-    async function executeTransaction(safeTxHash: string) {
-        if (!protocolKit || !apiKit) return
-        const safeTransaction = await apiKit.getTransaction(safeTxHash)
-        const executeTxResponse = await protocolKit.executeTransaction(safeTransaction)
-        const receipt = await executeTxResponse.transactionResponse?.wait()
+        try {
+            const safeTransaction = await apiKit.getTransaction(safeTxHash)
+            const executeTxResponse = await protocolKit.executeTransaction(safeTransaction)
+            const receipt = await executeTxResponse.transactionResponse?.wait()
+            return receipt;
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
     }
 
     useEffect(() => {
@@ -69,7 +97,7 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
                 ethers,
                 signerOrProvider: signer
             })
-            if(await ethAdapter.getChainId() !== ethers.toBigInt(11155111)) {
+            if (await ethAdapter.getChainId() !== ethers.toBigInt(11155111)) {
                 return;
             }
             const protocolKit = await Safe.create({ ethAdapter, safeAddress })
@@ -87,7 +115,7 @@ function SafeContextProvider({ children }: { children: React.ReactNode }) {
     }, [walletProvider])
 
     return (
-        <SafeContext.Provider value={{ accountAddress, addAdmin, getPendingTransactions, signPendingTransaction }}>
+        <SafeContext.Provider value={{ accountAddress, addAdmin, removeAdmin, getPendingTransactions, executeTransaction }}>
             {children}
         </SafeContext.Provider>
     )

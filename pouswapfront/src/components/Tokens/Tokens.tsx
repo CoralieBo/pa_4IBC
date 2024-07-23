@@ -28,11 +28,9 @@ const Tokens = () => {
           <thead>
             <tr className="border-b-[1px] border-colors-gray1 text-colors-black2 text-sm uppercase">
               <th className="pl-4 w-8">#</th>
-              <th className="text-start p-4 font-medium">Token name</th>
-              <th className="text-start p-4 font-medium">Address</th>
-              <th className="text-start p-4 font-medium">Price</th>
-              <th className="text-start p-4 font-medium">Volume</th>
-              <th className="text-start p-4 font-medium">Trades</th>
+              <th className="text-center p-4 font-medium">Token name</th>
+              <th className="text-center p-4 font-medium">Address</th>
+              <th className="text-center p-4 font-medium">Trades</th>
             </tr>
           </thead>
           <tbody>
@@ -91,7 +89,7 @@ const TableRows = ({ token }: TableRowsProps) => {
         {token.ID}
       </td>
 
-      <td className="p-4 flex items-center gap-3">
+      <td className="p-4 flex items-center justify-center gap-3">
         <img
           src={`https://ipfs.io/ipfs/${token.logo}`}
           alt="token logo"
@@ -103,26 +101,15 @@ const TableRows = ({ token }: TableRowsProps) => {
         </div>
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-center">
         <span>
           {token.address.slice(0, 5)}...{token.address.slice(-5)}
         </span>
       </td>
       
-      <td className="p-4 font-medium">
+      <td className="p-4 font-medium text-center">
         <span>
-          ${token.price}
-        </span>
-      </td>
-
-      <td className="p-4">
-        <span>
-          {/* ${token.volume.toLocaleString("en-US", {})} */}
-        </span>
-      </td>
-
-      <td className="p-4">
-        <span>
+          {token.trades}
         </span>
       </td>
     </motion.tr>

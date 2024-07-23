@@ -8,4 +8,5 @@ type User struct {
 	Role      string `json:"role"`   // USER / ADMIN
 	Status    string `json:"status"` // ACTIVE / BAN
 	Signature string `json:"signature"`
+	Swap      uint   `json:"swap"`
 }
